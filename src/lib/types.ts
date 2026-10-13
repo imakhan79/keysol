@@ -1,7 +1,6 @@
 export type ServiceCategory =
   | "communication"
   | "development"
-  | "business"
   | "ecommerce"
   | "marketing"
   | "infrastructure";

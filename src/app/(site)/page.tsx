@@ -107,7 +107,7 @@ export default async function HomePage() {
                 <Link
                   key={key}
                   href={`/services#${key}`}
-                  className="group rounded-2xl border border-white/10 bg-white/[0.04] p-4 backdrop-blur transition hover:border-white/25 hover:bg-white/[0.08]"
+                  className="group rounded-2xl border border-white/10 first:col-span-2 bg-white/[0.04] p-4 backdrop-blur transition hover:border-white/25 hover:bg-white/[0.08]"
                 >
                   <Icon name={sample?.icon ?? ""} className="size-5 text-accent" />
                   <p className="mt-3 text-sm font-semibold">{serviceCategories[key].label}</p>

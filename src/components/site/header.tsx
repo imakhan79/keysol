@@ -30,11 +30,11 @@ export async function SiteHeader() {
           <Dropdown label="Services" href="/services" wide>
             <div className="grid grid-cols-3 gap-x-8 gap-y-6">
               {serviceColumns.map((col) => (
-                <div key={col.key}>
+                <div key={col.key} className={col.items.length > 7 ? "col-span-2" : undefined}>
                   <Link href={`/services#${col.key}`} className="text-xs font-semibold tracking-wider text-slate-400 uppercase hover:text-brand-600">
                     {col.label}
                   </Link>
-                  <ul className="mt-2 space-y-0.5">
+                  <ul className={col.items.length > 7 ? "mt-2 grid grid-cols-2 gap-x-4 gap-y-0.5" : "mt-2 space-y-0.5"}>
                     {col.items.map((s) => (
                       <li key={s.id}>
                         <Link

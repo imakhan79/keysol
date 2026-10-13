@@ -8,17 +8,13 @@ export const siteUrl = (
 ).replace(/\/$/, "");
 
 export const serviceCategories: Record<ServiceCategory, { label: string; blurb: string }> = {
+  development: {
+    label: "Software Solutions",
+    blurb: "Custom software, web, mobile and enterprise apps, APIs, CRM, ERP, HRMS, CMS, inventory and automation.",
+  },
   communication: {
     label: "Digital Communication",
     blurb: "SMS, messaging and omnichannel customer communication.",
-  },
-  development: {
-    label: "Software & Web Development",
-    blurb: "Custom software, websites, mobile apps and CMS.",
-  },
-  business: {
-    label: "Business Technology",
-    blurb: "CRM and ERP systems that connect your operations.",
   },
   ecommerce: {
     label: "E-commerce",
