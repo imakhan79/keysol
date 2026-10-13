@@ -45,7 +45,7 @@ function unwrap<T>({ data, error }: { data: T | null; error: { message: string }
 
 const defaultSettings: SiteSettings = {
   company: {
-    name: "KeySol",
+    name: "Digitora Next",
     tagline: "",
     description: "",
     email: "",

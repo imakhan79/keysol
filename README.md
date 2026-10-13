@@ -1,6 +1,6 @@
-# KeySol website
+# Digitora Next website
 
-Corporate website and lead-generation platform for KeySol: digital communication & SMS, software / web / mobile
+Corporate website and lead-generation platform for Digitora Next: digital communication & SMS, software / web / mobile
 development, CMS, CRM, ERP, e-commerce, digital marketing, SEO, social media, hosting, maintenance and support.
 
 **Stack:** Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind CSS 4 · Supabase (Postgres, Auth, Storage)

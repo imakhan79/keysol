@@ -13,7 +13,7 @@ export default function PanelLayout({ children }: LayoutProps<"/admin">) {
         <div className="flex h-14 items-center justify-between px-4 lg:h-16">
           <Link href="/admin" className="flex items-center gap-2 font-semibold text-white">
             <span className="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-brand-500 to-accent text-xs">
-              K
+              D
             </span>
             Admin
           </Link>
