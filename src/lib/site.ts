@@ -1,6 +1,11 @@
 import type { ServiceCategory } from "./types";
 
-export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+// Explicit setting first, then Vercel's production domain (set automatically on Vercel), then local dev.
+const vercelProductionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+export const siteUrl = (
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (vercelProductionHost ? `https://${vercelProductionHost}` : "http://localhost:3000")
+).replace(/\/$/, "");
 
 export const serviceCategories: Record<ServiceCategory, { label: string; blurb: string }> = {
   communication: {
