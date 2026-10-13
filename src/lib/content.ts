@@ -71,20 +71,26 @@ export async function getSettings(): Promise<SiteSettings> {
   return settings as SiteSettings;
 }
 
+// "business" was merged into "development" (Software Solutions); map rows not yet migrated.
+function normalizeService(service: Service): Service {
+  return (service.category as string) === "business" ? { ...service, category: "development" } : service;
+}
+
 export async function getServices(): Promise<Service[]> {
   "use cache";
   tag("services");
   return unwrap(
     await createPublicClient().from("services").select("*").eq("is_published", true).order("sort_order"),
-  );
+  ).map(normalizeService);
 }
 
 export async function getService(slug: string): Promise<Service | null> {
   "use cache";
   tag("services");
-  return unwrap(
+  const service = unwrap(
     await createPublicClient().from("services").select("*").eq("is_published", true).eq("slug", slug).maybeSingle(),
   );
+  return service && normalizeService(service);
 }
 
 export async function getIndustries(): Promise<Industry[]> {
