@@ -1,0 +1,79 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@theme {
+  --color-ink: #0b1220;
+  --color-ink-soft: #111a2e;
+  --color-brand-50: #eef4ff;
+  --color-brand-100: #dbe7ff;
+  --color-brand-200: #bdd3ff;
+  --color-brand-300: #8fb5ff;
+  --color-brand-400: #5a8cff;
+  --color-brand-500: #3366ff;
+  --color-brand-600: #1f4ff0;
+  --color-brand-700: #1a3fcc;
+  --color-brand-800: #1b36a3;
+  --color-brand-900: #1c3380;
+  --color-accent: #22d3ee;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #ffffff;
+  color: #0f172a;
+}
+
+::selection {
+  background: var(--color-brand-200);
+}
+
+/* Subtle grid used behind dark hero sections */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.06) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+@utility container-page {
+  @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-primary {
+  @apply btn bg-brand-600 text-white shadow-sm hover:bg-brand-700;
+}
+@utility btn-secondary {
+  @apply btn border border-slate-300 bg-white text-slate-900 hover:border-slate-400 hover:bg-slate-50;
+}
+@utility btn-ghost-light {
+  @apply btn border border-white/20 bg-white/5 text-white hover:bg-white/10;
+}
+@utility btn-danger {
+  @apply btn border border-red-200 bg-white text-red-700 hover:bg-red-50;
+}
+@utility eyebrow {
+  @apply text-xs font-semibold tracking-[0.18em] text-brand-600 uppercase;
+}
+@utility card {
+  @apply rounded-2xl border border-slate-200 bg-white shadow-[0_1px_2px_rgb(15_23_42/0.04)];
+}
+@utility field-label {
+  @apply mb-1.5 block text-sm font-medium text-slate-700;
+}
+@utility field {
+  @apply block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 focus:outline-none;
+}

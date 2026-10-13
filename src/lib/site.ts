@@ -1,0 +1,53 @@
+import type { ServiceCategory } from "./types";
+
+export const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
+
+export const serviceCategories: Record<ServiceCategory, { label: string; blurb: string }> = {
+  communication: {
+    label: "Digital Communication",
+    blurb: "SMS, messaging and omnichannel customer communication.",
+  },
+  development: {
+    label: "Software & Web Development",
+    blurb: "Custom software, websites, mobile apps and CMS.",
+  },
+  business: {
+    label: "Business Technology",
+    blurb: "CRM and ERP systems that connect your operations.",
+  },
+  ecommerce: {
+    label: "E-commerce",
+    blurb: "Online stores, payments and marketplace integrations.",
+  },
+  marketing: {
+    label: "Digital Marketing",
+    blurb: "Campaigns, SEO and social media that drive growth.",
+  },
+  infrastructure: {
+    label: "Hosting & Support",
+    blurb: "Managed hosting, maintenance and technical support.",
+  },
+};
+
+export const categoryOrder = Object.keys(serviceCategories) as ServiceCategory[];
+
+export type NavLink = { href: string; label: string; description?: string };
+
+/** Static dropdowns. Services and Solutions menus are built from the CMS. */
+export const workNav: NavLink[] = [
+  { href: "/portfolio", label: "Portfolio", description: "Projects we've delivered" },
+  { href: "/case-studies", label: "Case Studies", description: "Challenges, solutions and results" },
+  { href: "/testimonials", label: "Testimonials", description: "What clients say" },
+];
+
+export const companyNav: NavLink[] = [
+  { href: "/about", label: "About Us", description: "Mission, team and capabilities" },
+  { href: "/faqs", label: "FAQs", description: "Answers to common questions" },
+  { href: "/support", label: "Support", description: "Support channels and service levels" },
+  { href: "/blog", label: "Blog", description: "Insights and guides" },
+];
+
+export function formatDate(value: string | null | undefined) {
+  if (!value) return "";
+  return new Intl.DateTimeFormat("en", { year: "numeric", month: "short", day: "numeric" }).format(new Date(value));
+}
