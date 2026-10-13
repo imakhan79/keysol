@@ -13,7 +13,8 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function ContactPage() {
-  const { company } = await getSettings();
+  const { company, integrations } = await getSettings();
+  const mapQuery = integrations.map_query || company.address;
   const details = [
     company.email && { icon: Mail, label: "Email", value: company.email, href: `mailto:${company.email}` },
     company.phone && {
@@ -41,7 +42,18 @@ export default async function ContactPage() {
         crumbs={[{ href: "/contact", label: "Contact" }]}
       />
       <div className="container-page grid gap-10 py-16 lg:grid-cols-[1fr_360px]">
-        <LeadForm type="contact" />
+        <div className="space-y-6">
+          <LeadForm type="contact" />
+          {integrations.show_map && mapQuery && (
+            <iframe
+              title={`Map showing ${company.name}`}
+              src={`https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&z=15&output=embed`}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-80 w-full rounded-2xl border border-slate-200"
+            />
+          )}
+        </div>
         <aside className="space-y-6">
           <div className="card divide-y divide-slate-100">
             {details.map(({ icon: Icon, label, value, href }) => (

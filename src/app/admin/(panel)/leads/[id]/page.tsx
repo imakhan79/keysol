@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { ArrowLeft, Mail, Phone } from "lucide-react";
+import { ArrowLeft, CalendarPlus, Mail, Phone } from "lucide-react";
 import { can, requireStaff } from "@/lib/auth";
 import { roleLabels, type StaffRole } from "@/lib/roles";
 import { formatDate } from "@/lib/site";
@@ -58,6 +58,11 @@ export default async function LeadPage(props: PageProps<"/admin/leads/[id]">) {
             <Link href="/admin/leads" className="btn-secondary">
               <ArrowLeft className="size-4" /> All leads
             </Link>
+            {lead.preferred_date && (
+              <a href={calendarLink(lead)} target="_blank" rel="noopener noreferrer" className="btn-secondary">
+                <CalendarPlus className="size-4" /> Add to Google Calendar
+              </a>
+            )}
             <a href={`mailto:${lead.email}`} className="btn-primary">
               <Mail className="size-4" /> Email
             </a>
@@ -140,4 +145,27 @@ export default async function LeadPage(props: PageProps<"/admin/leads/[id]">) {
       </div>
     </>
   );
+}
+
+/** Prefilled all-day Google Calendar event for a consultation request; staff set the exact time. */
+function calendarLink(lead: Lead) {
+  const day = lead.preferred_date!.replaceAll("-", "");
+  const next = new Date(`${lead.preferred_date}T00:00:00Z`);
+  next.setUTCDate(next.getUTCDate() + 1);
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: `Consultation: ${lead.name}${lead.company ? ` (${lead.company})` : ""}`,
+    dates: `${day}/${next.toISOString().slice(0, 10).replaceAll("-", "")}`,
+    details: [
+      lead.preferred_time && `Preferred time: ${lead.preferred_time}`,
+      lead.meeting_type && `Meeting: ${lead.meeting_type}`,
+      `Email: ${lead.email}`,
+      lead.phone && `Phone: ${lead.phone}`,
+      lead.message && `\n${lead.message}`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+    add: lead.email,
+  });
+  return `https://calendar.google.com/calendar/render?${params}`;
 }

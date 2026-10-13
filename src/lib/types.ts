@@ -212,7 +212,21 @@ export type AboutSettings = {
   certifications: { name: string; issuer: string; year: string }[];
 };
 
+/** Integrations and site-wide SEO, edited in Admin → Settings. */
+export type IntegrationSettings = {
+  ga_measurement_id?: string;
+  google_site_verification?: string;
+  bing_site_verification?: string;
+  /** Calendly / Google Calendar appointment page for instant consultation booking. */
+  booking_url?: string;
+  /** Show a Google Map of the office on the contact page. */
+  show_map?: boolean;
+  /** Place name or address for the map; defaults to the company address. */
+  map_query?: string;
+};
+
 export type SiteSettings = {
+  integrations: IntegrationSettings;
   company: CompanySettings;
   social: SocialSettings;
   home: HomeSettings;

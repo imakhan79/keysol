@@ -18,7 +18,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { company } = await getSettings();
+  const { company, integrations } = await getSettings();
   return {
     metadataBase: new URL(siteUrl),
     title: { default: `${company.name} | ${company.tagline}`, template: `%s | ${company.name}` },
@@ -26,6 +26,10 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: company.name,
     openGraph: { type: "website", siteName: company.name, locale: "en" },
     twitter: { card: "summary_large_image" },
+    verification: {
+      google: integrations.google_site_verification || undefined,
+      other: integrations.bing_site_verification ? { "msvalidate.01": integrations.bing_site_verification } : undefined,
+    },
   };
 }
 
@@ -39,9 +43,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col font-sans">
         {children}
         <Suspense fallback={null}>
-          <Analytics />
+          <AnalyticsWithSettings />
         </Suspense>
       </body>
     </html>
   );
+}
+
+async function AnalyticsWithSettings() {
+  const { integrations } = await getSettings();
+  return <Analytics gaId={integrations.ga_measurement_id} />;
 }

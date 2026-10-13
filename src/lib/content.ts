@@ -44,6 +44,7 @@ function unwrap<T>({ data, error }: { data: T | null; error: { message: string }
 }
 
 const defaultSettings: SiteSettings = {
+  integrations: {},
   company: {
     name: "Digitora Next",
     tagline: "",

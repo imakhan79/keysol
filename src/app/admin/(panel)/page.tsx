@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowRight, Eye, FileText, Inbox, Target } from "lucide-react";
+import { ArrowRight, Eye, FileText, Inbox, Mail, MessageCircle, MousePointerClick, Phone, Target, Users } from "lucide-react";
 import { can, requireStaff } from "@/lib/auth";
 import { createSessionClient } from "@/lib/supabase/server";
 import type { Lead, LeadStatus } from "@/lib/types";
@@ -20,6 +20,22 @@ type Summary = {
   top_pages: { path: string; views: number }[];
   top_sources: { source: string; views: number }[];
   devices: Record<string, number>;
+  // Added by the analytics-events migration; absent until it runs.
+  visitors?: number;
+  events?: Partial<Record<"cta_click" | "whatsapp_click" | "phone_click" | "email_click", number>>;
+  top_ctas?: { label: string; clicks: number }[];
+  leads_by_type?: Partial<Record<string, number>>;
+  lead_sources?: { source: string; leads: number }[];
+  service_views?: { path: string; views: number }[];
+};
+
+const leadTypeLabels: Record<string, string> = {
+  quote: "Quote requests",
+  contact: "Contact forms",
+  enquiry: "Service enquiries",
+  consultation: "Consultations",
+  callback: "Callbacks",
+  newsletter: "Newsletter sign-ups",
 };
 
 export default async function DashboardPage(props: PageProps<"/admin">) {
@@ -36,7 +52,12 @@ export default async function DashboardPage(props: PageProps<"/admin">) {
   if (error) throw new Error(error.message);
   const s = summary as Summary;
   const recentLeads = (recent.data ?? []) as Lead[];
-  const conversion = s.page_views > 0 ? ((s.leads / s.page_views) * 100).toFixed(1) : "0.0";
+  // Conversion rate: enquiries (not newsletter sign-ups) per unique visitor, or per page view
+  // until visitor counting is available.
+  const enquiries = s.leads - (s.leads_by_type?.newsletter ?? 0);
+  const base = s.visitors ?? s.page_views;
+  const conversion = base > 0 ? ((enquiries / base) * 100).toFixed(1) : "0.0";
+  const events = s.events ?? {};
 
   return (
     <>
@@ -45,10 +66,22 @@ export default async function DashboardPage(props: PageProps<"/admin">) {
         {denied && <Notice tone="error">Your role doesn&apos;t have access to that section.</Notice>}
 
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Stat icon={Eye} label="Page views" value={s.page_views} />
+          <Stat icon={Users} label="Visitors" value={s.visitors ?? "—"} hint={`${s.page_views} page views`} />
           <Stat icon={Inbox} label="New leads" value={s.leads} hint={`${s.quotes} quote requests`} />
-          <Stat icon={Target} label="Visit → lead rate" value={`${conversion}%`} />
+          <Stat
+            icon={Target}
+            label="Conversion rate"
+            value={`${conversion}%`}
+            hint={s.visitors === undefined ? "Enquiries per page view" : "Enquiries per visitor"}
+          />
           <Stat icon={FileText} label="Open pipeline" value={s.open_leads} hint="Not yet won or lost" />
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <Stat icon={MousePointerClick} label="CTA clicks" value={events.cta_click ?? 0} hint="Quote, consultation and contact buttons" />
+          <Stat icon={MessageCircle} label="WhatsApp clicks" value={events.whatsapp_click ?? 0} />
+          <Stat icon={Phone} label="Phone clicks" value={events.phone_click ?? 0} />
+          <Stat icon={Mail} label="Email clicks" value={events.email_click ?? 0} />
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[2fr_1fr]">
@@ -82,6 +115,16 @@ export default async function DashboardPage(props: PageProps<"/admin">) {
           <RankList title="Top pages" rows={s.top_pages.map((p) => ({ label: p.path, value: p.views }))} />
           <RankList title="Traffic sources" rows={s.top_sources.map((p) => ({ label: p.source, value: p.views }))} />
           <RankList title="Devices" rows={Object.entries(s.devices).map(([label, value]) => ({ label, value }))} />
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-4">
+          <RankList title="Lead sources" rows={(s.lead_sources ?? []).map((r) => ({ label: r.source, value: r.leads }))} />
+          <RankList
+            title="Form submissions"
+            rows={Object.entries(s.leads_by_type ?? {}).map(([type, n]) => ({ label: leadTypeLabels[type] ?? type, value: n ?? 0 }))}
+          />
+          <RankList title="Service page views" rows={(s.service_views ?? []).map((r) => ({ label: r.path.replace("/services/", ""), value: r.views }))} />
+          <RankList title="Top CTAs" rows={(s.top_ctas ?? []).map((r) => ({ label: r.label, value: r.clicks }))} />
         </div>
 
         {can(staff, "leads") && (

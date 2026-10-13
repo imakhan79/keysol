@@ -162,7 +162,24 @@ export async function saveSettings(_prev: FormState, formData: FormData): Promis
   await requireStaff("siteContent");
   const get = (k: string) => String(formData.get(k) ?? "").trim();
 
+  const gaId = get("integrations.ga_measurement_id").toUpperCase();
+  if (gaId && !/^G-[A-Z0-9]{4,20}$/.test(gaId)) return { error: "The Google Analytics ID should look like G-XXXXXXXXXX." };
+  const bookingUrl = get("integrations.booking_url");
+  if (bookingUrl && !/^https:\/\//.test(bookingUrl)) return { error: "The booking link must start with https://" };
+
   const rows = [
+    {
+      key: "integrations",
+      value: {
+        ga_measurement_id: gaId,
+        // Accept either the bare token or the whole <meta> tag pasted from Search Console.
+        google_site_verification: get("integrations.google_site_verification").replace(/^.*content="([^"]+)".*$/, "$1"),
+        bing_site_verification: get("integrations.bing_site_verification").replace(/^.*content="([^"]+)".*$/, "$1"),
+        booking_url: bookingUrl,
+        show_map: formData.get("integrations.show_map") === "on",
+        map_query: get("integrations.map_query"),
+      },
+    },
     {
       key: "company",
       value: {

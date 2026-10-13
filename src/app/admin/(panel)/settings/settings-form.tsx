@@ -12,6 +12,7 @@ export function SettingsForm({ settings }: { settings: Partial<SiteSettings> }) 
   const h = settings.home;
   const q = settings.quote_options;
   const a = settings.about;
+  const i = settings.integrations ?? {};
 
   return (
     <form action={action} className="max-w-4xl space-y-6">
@@ -97,6 +98,18 @@ export function SettingsForm({ settings }: { settings: Partial<SiteSettings> }) 
           mono
           help="Name | Issuer | Year. Hidden when empty."
         />
+      </Section>
+
+      <Section title="Integrations & SEO">
+        <Input name="integrations.ga_measurement_id" label="Google Analytics 4 measurement ID" value={i.ga_measurement_id} placeholder="G-XXXXXXXXXX" help="Page views, CTA, WhatsApp, phone and form conversions are sent to GA4 when set." />
+        <Input name="integrations.google_site_verification" label="Google Search Console verification" value={i.google_site_verification} help="Paste the HTML-tag token (or the whole meta tag), then verify in Search Console and submit /sitemap.xml." />
+        <Input name="integrations.bing_site_verification" label="Bing Webmaster verification" value={i.bing_site_verification} />
+        <Input name="integrations.booking_url" label="Calendar booking link" value={i.booking_url} placeholder="https://calendly.com/…" help="Optional. Calendly or Google Calendar appointment page, offered on Book a consultation." />
+        <Input name="integrations.map_query" label="Map location" value={i.map_query} placeholder="Defaults to the company address" />
+        <label className="flex items-center gap-3 self-end rounded-lg border border-slate-200 px-3 py-2.5 text-sm font-medium text-slate-700">
+          <input type="checkbox" name="integrations.show_map" defaultChecked={i.show_map === true} className="size-4 accent-brand-600" />
+          Show Google Map on the contact page
+        </label>
       </Section>
 
       <Section title="Quote form options">
