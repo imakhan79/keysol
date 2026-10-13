@@ -34,7 +34,8 @@ function useLeadSubmit(type: LeadType) {
       utm_source: params.get("utm_source") ?? stored.utm_source ?? "",
       utm_medium: params.get("utm_medium") ?? stored.utm_medium ?? "",
       utm_campaign: params.get("utm_campaign") ?? stored.utm_campaign ?? "",
-      started_at: String(startedAt.current),
+      // Elapsed time on the form, measured on one clock (client/server clocks can differ).
+      elapsed_ms: String(startedAt.current ? Date.now() - startedAt.current : 0),
       source_page: window.location.pathname,
       referrer: document.referrer && !document.referrer.startsWith(window.location.origin) ? document.referrer : "",
     };

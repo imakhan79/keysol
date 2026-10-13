@@ -98,8 +98,8 @@ function throttled(key: string) {
 
 export async function submitLead(_prev: LeadFormState, formData: FormData): Promise<LeadFormState> {
   // Spam traps: hidden honeypot field, and forms submitted faster than a human can type.
-  const startedAt = Number(formData.get("started_at"));
-  if (formData.get("website") || (startedAt && Date.now() - startedAt < 2500)) {
+  const elapsed = Number(formData.get("elapsed_ms"));
+  if (formData.get("website") || (elapsed > 0 && elapsed < 2500)) {
     return { status: "success", message: "Thanks! We'll be in touch." };
   }
 
