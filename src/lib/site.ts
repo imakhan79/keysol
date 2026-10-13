@@ -26,11 +26,11 @@ export const serviceCategories: Record<ServiceCategory, { label: string; blurb: 
   },
   marketing: {
     label: "Digital Marketing",
-    blurb: "Campaigns, SEO and social media that drive growth.",
+    blurb: "SEO, social, content and paid campaigns that generate leads.",
   },
   infrastructure: {
     label: "Hosting & Support",
-    blurb: "Managed hosting, maintenance and technical support.",
+    blurb: "Hosting, domains, SSL, backups, monitoring and support.",
   },
 };
 
