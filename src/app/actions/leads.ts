@@ -165,7 +165,18 @@ export async function submitLead(_prev: LeadFormState, formData: FormData): Prom
 
   const lead = parsed.data;
   // No .select() after insert: visitors may create leads but not read them back (RLS).
-  const { error } = await createPublicClient().from("leads").insert(lead);
+  let { error } = await createPublicClient().from("leads").insert(lead);
+  // Database not yet migrated for the newer fields: keep the lead, folding those details into the message.
+  if (error?.code === "PGRST204") {
+    const { industry, preferred_date, preferred_time, meeting_type, ...base } = lead;
+    const extra = [
+      industry && `Industry: ${industry}`,
+      preferred_date && `Preferred consultation: ${[preferred_date, preferred_time, meeting_type].filter(Boolean).join(" · ")}`,
+    ].filter(Boolean);
+    const type = base.type === "consultation" ? "enquiry" : base.type;
+    const message = [base.type === "consultation" && "[Consultation booking]", ...extra, base.message].filter(Boolean).join("\n");
+    ({ error } = await createPublicClient().from("leads").insert({ ...base, type, message }));
+  }
   // Already subscribed: unique index on newsletter emails. Treat as success without revealing it.
   if (error?.code === "23505" && lead.type === "newsletter") return { status: "success", message: successMessages.newsletter };
   if (error) {
