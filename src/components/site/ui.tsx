@@ -278,13 +278,13 @@ export function TestimonialCard({ testimonial, industry }: { testimonial: Testim
   );
 }
 
-export function PostCard({ post }: { post: BlogPost }) {
+export function PostCard({ post, category }: { post: BlogPost; category?: string }) {
   return (
     <Link href={`/blog/${post.slug}`} className="card group flex flex-col overflow-hidden transition hover:shadow-lg">
-      <Cover src={post.cover_image_url} alt={post.title} label={post.category || post.tags[0] || "Insights"} />
+      <Cover src={post.cover_image_url} alt={post.title} label={category || post.tags[0] || "Insights"} />
       <div className="flex flex-1 flex-col p-6">
         <p className="text-xs text-slate-500">
-          {post.category && <span className="font-medium text-brand-700">{post.category} · </span>}
+          {category && <span className="font-medium text-brand-700">{category} · </span>}
           {formatDate(post.published_at)}
           {post.author_name && <> · {post.author_name}</>}
         </p>

@@ -7,7 +7,7 @@ import { CmsImage } from "@/components/cms-image";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { CtaBanner, DetailSkeleton, PageHero, PostCard } from "@/components/site/ui";
-import { getPost, getPosts, getSettings, getSlugs } from "@/lib/content";
+import { getBlogCategories, getPost, getPosts, getSettings, getSlugs } from "@/lib/content";
 import { formatDate, siteUrl } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 import type { BlogPost } from "@/lib/types";
@@ -39,7 +39,9 @@ export default function PostPage(props: PageProps<"/blog/[slug]">) {
 async function PostDetail({ params }: Pick<PageProps<"/blog/[slug]">, "params">) {
   const post = await getPost((await params).slug);
   if (!post) notFound();
-  const [posts, { company }] = await Promise.all([getPosts(), getSettings()]);
+  const [posts, { company }, categories] = await Promise.all([getPosts(), getSettings(), getBlogCategories()]);
+  const category = categories.find((c) => c.id === post.category_id);
+  const categoryName = (id: string | null) => categories.find((c) => c.id === id)?.name;
   const related = relatedPosts(post, posts);
   const url = `${siteUrl}/blog/${post.slug}`;
 
@@ -57,12 +59,12 @@ async function PostDetail({ params }: Pick<PageProps<"/blog/[slug]">, "params">)
           author: { "@type": "Organization", name: post.author_name || company.name },
           publisher: { "@type": "Organization", name: company.name },
           mainEntityOfPage: url,
-          articleSection: post.category || undefined,
+          articleSection: category?.name,
           keywords: post.tags.join(", ") || undefined,
         }}
       />
       <PageHero
-        eyebrow={post.category || "Blog"}
+        eyebrow={category?.name || "Blog"}
         title={post.title}
         description={post.excerpt}
         crumbs={[
@@ -126,7 +128,7 @@ async function PostDetail({ params }: Pick<PageProps<"/blog/[slug]">, "params">)
             <h2 className="mb-8 text-2xl font-semibold tracking-tight">Related articles</h2>
             <div className="grid gap-6 md:grid-cols-3">
               {related.map((p) => (
-                <PostCard key={p.id} post={p} />
+                <PostCard key={p.id} post={p} category={categoryName(p.category_id)} />
               ))}
             </div>
           </div>
@@ -140,7 +142,7 @@ async function PostDetail({ params }: Pick<PageProps<"/blog/[slug]">, "params">)
 /** Same category and shared tags rank first; newer posts break ties (posts arrive newest first). */
 function relatedPosts(post: BlogPost, posts: BlogPost[]) {
   const score = (p: BlogPost) =>
-    (post.category && p.category === post.category ? 2 : 0) + p.tags.filter((t) => post.tags.includes(t)).length;
+    (post.category_id && p.category_id === post.category_id ? 2 : 0) + p.tags.filter((t) => post.tags.includes(t)).length;
   return posts
     .filter((p) => p.id !== post.id)
     .map((p, i) => ({ p, s: score(p), i }))

@@ -4,13 +4,17 @@ import { CheckCircle2 } from "lucide-react";
 import { LeadForm } from "@/components/site/lead-form";
 import { PageHero } from "@/components/site/ui";
 import { getIndustries, getServices, getSettings } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Request a quote",
   description: "Tell us about your project and receive a tailored proposal and estimate within one business day.",
   path: "/quote",
-});
+}),
+  );
+}
 
 export default function QuotePage(props: PageProps<"/quote">) {
   return (

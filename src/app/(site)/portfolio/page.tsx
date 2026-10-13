@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { CtaBanner, EmptyState, PageHero, ProjectCard } from "@/components/site/ui";
 import { getProjects } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Portfolio",
   description: "Selected websites, apps, stores and platforms we have designed and built for our clients.",
   path: "/portfolio",
-});
+}),
+  );
+}
 
 export default async function PortfolioPage() {
   const projects = await getProjects();

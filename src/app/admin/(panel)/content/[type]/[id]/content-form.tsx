@@ -4,6 +4,7 @@ import { useActionState, useState, useTransition } from "react";
 import { Eye, Loader2, Pencil, Trash2, Upload } from "lucide-react";
 import { Markdown } from "@/components/markdown";
 import type { FieldDef } from "@/lib/cms";
+import { uploadMedia } from "@/lib/media";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 import { deleteContent, saveContent, type FormState } from "../../../../actions";
 
@@ -20,7 +21,7 @@ export function ContentForm({
   id: string | null;
   fields: FieldDef[];
   values: Record<string, unknown>;
-  refOptions: Record<"services" | "industries" | "testimonials" | "serviceSlugs", Option[]>;
+  refOptions: Record<"services" | "industries" | "testimonials" | "serviceCategories" | "blogCategories" | "serviceSlugs", Option[]>;
 }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveContent.bind(null, typeKey, id), {});
   const main = fields.filter((f) => !f.name.startsWith("seo_"));
@@ -281,15 +282,12 @@ function useMediaUpload(onUploaded: (url: string) => void) {
   const upload = (file: File) =>
     start(async () => {
       setError("");
-      const supabase = createBrowserSupabase();
-      const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
-      const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-      const { error: err } = await supabase.storage.from("media").upload(path, file, { contentType: file.type });
+      const { error: err, url } = await uploadMedia(createBrowserSupabase(), file);
       if (err) {
-        setError(err.message);
+        setError(err);
         return;
       }
-      onUploaded(supabase.storage.from("media").getPublicUrl(path).data.publicUrl);
+      onUploaded(url);
     });
 
   return { upload, uploading, error };

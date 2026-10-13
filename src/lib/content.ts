@@ -1,14 +1,18 @@
 import "server-only";
 import { cacheLife, cacheTag } from "next/cache";
 import { createPublicClient } from "./supabase/public";
+import { defaultServiceCategories } from "./site";
 import type {
+  BlogCategory,
   BlogPost,
   CaseStudy,
   Faq,
   Industry,
   Page,
   PortfolioProject,
+  SeoSetting,
   Service,
+  ServiceCategoryRow,
   SiteSettings,
   Solution,
   TeamMember,
@@ -30,6 +34,10 @@ export const contentTags = [
   "faqs",
   "team_members",
   "site_settings",
+  "service_categories",
+  "blog_categories",
+  "media",
+  "seo_settings",
 ] as const;
 export type ContentTag = (typeof contentTags)[number];
 
@@ -213,6 +221,36 @@ export async function getTeam(): Promise<TeamMember[]> {
   return unwrap(
     await createPublicClient().from("team_members").select("*").eq("is_published", true).order("sort_order"),
   );
+}
+
+export async function getServiceCategories(): Promise<ServiceCategoryRow[]> {
+  "use cache";
+  tag("service_categories");
+  const { data, error } = await createPublicClient()
+    .from("service_categories")
+    .select("id, key, label, blurb, sort_order")
+    .eq("is_published", true)
+    .order("sort_order");
+  // Table not created yet (migration pending): use the built-in list.
+  return error || !data?.length ? defaultServiceCategories : data;
+}
+
+export async function getBlogCategories(): Promise<BlogCategory[]> {
+  "use cache";
+  tag("blog_categories");
+  const { data, error } = await createPublicClient()
+    .from("blog_categories")
+    .select("*")
+    .eq("is_published", true)
+    .order("sort_order");
+  return error ? [] : (data ?? []);
+}
+
+export async function getSeoSettings(): Promise<SeoSetting[]> {
+  "use cache";
+  tag("seo_settings");
+  const { data, error } = await createPublicClient().from("seo_settings").select("*");
+  return error ? [] : (data ?? []);
 }
 
 /** Slugs for generateStaticParams. Cache Components requires at least one entry. */

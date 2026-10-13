@@ -22,16 +22,19 @@ import {
   getIndustries,
   getPosts,
   getProjects,
+  getBlogCategories,
+  getServiceCategories,
   getServices,
   getSettings,
   getSolutions,
   getTestimonials,
 } from "@/lib/content";
-import { categoryOrder, serviceCategories, siteUrl } from "@/lib/site";
+import { withSeoOverrides } from "@/lib/seo";
+import { siteUrl } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { company } = await getSettings();
-  return { alternates: { canonical: "/" }, description: company.description };
+  return withSeoOverrides({ alternates: { canonical: "/" }, description: company.description });
 }
 
 const steps = [
@@ -42,7 +45,7 @@ const steps = [
 ];
 
 export default async function HomePage() {
-  const [settings, services, solutions, industries, projects, caseStudies, testimonials, faqs, posts] =
+  const [settings, services, solutions, industries, projects, caseStudies, testimonials, faqs, posts, categories, blogCategories] =
     await Promise.all([
       getSettings(),
       getServices(),
@@ -53,6 +56,8 @@ export default async function HomePage() {
       getTestimonials({ featuredOnly: true }),
       getFaqs(),
       getPosts(),
+      getServiceCategories(),
+      getBlogCategories(),
     ]);
   const { company, home, social } = settings;
   const topLevel = services.filter((s) => !s.parent_id);
@@ -108,7 +113,7 @@ export default async function HomePage() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {categoryOrder.map((key) => {
+            {categories.map(({ key, label, blurb }) => {
               const sample = topLevel.find((s) => s.category === key);
               return (
                 <Link
@@ -117,8 +122,8 @@ export default async function HomePage() {
                   className="group rounded-2xl border border-white/10 first:col-span-2 bg-white/[0.04] p-4 backdrop-blur transition hover:border-white/25 hover:bg-white/[0.08]"
                 >
                   <Icon name={sample?.icon ?? ""} className="size-5 text-accent" />
-                  <p className="mt-3 text-sm font-semibold">{serviceCategories[key].label}</p>
-                  <p className="mt-1 text-xs leading-relaxed text-slate-400">{serviceCategories[key].blurb}</p>
+                  <p className="mt-3 text-sm font-semibold">{label}</p>
+                  <p className="mt-1 text-xs leading-relaxed text-slate-400">{blurb}</p>
                 </Link>
               );
             })}
@@ -301,7 +306,7 @@ export default async function HomePage() {
             <SectionHeading eyebrow="Insights" title="Latest from the blog" action={{ href: "/blog", label: "All articles" }} />
             <RevealGrid className="grid gap-6 md:grid-cols-3">
               {posts.slice(0, 3).map((post) => (
-                <PostCard key={post.id} post={post} />
+                <PostCard key={post.id} post={post} category={blogCategories.find((c) => c.id === post.category_id)?.name} />
               ))}
             </RevealGrid>
           </div>

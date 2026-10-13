@@ -1,9 +1,32 @@
-export type ServiceCategory =
-  | "communication"
-  | "development"
-  | "ecommerce"
-  | "marketing"
-  | "infrastructure";
+/** Key of a row in service_categories (e.g. "development"). */
+export type ServiceCategory = string;
+
+export type ServiceCategoryRow = {
+  id?: string;
+  key: string;
+  label: string;
+  blurb: string;
+  sort_order: number;
+};
+
+export type BlogCategory = Seo &
+  Timestamps & {
+    id: string;
+    slug: string;
+    name: string;
+    description: string;
+    sort_order: number;
+    is_published: boolean;
+  };
+
+export type SeoSetting = {
+  id: string;
+  path: string;
+  meta_title: string | null;
+  meta_description: string | null;
+  og_image_url: string | null;
+  noindex: boolean;
+};
 
 type Seo = { seo_title: string | null; seo_description: string | null };
 type Timestamps = { created_at: string; updated_at: string };
@@ -105,7 +128,7 @@ export type BlogPost = Seo &
     body: string;
     cover_image_url: string | null;
     author_name: string;
-    category: string;
+    category_id: string | null;
     tags: string[];
     is_published: boolean;
     published_at: string | null;

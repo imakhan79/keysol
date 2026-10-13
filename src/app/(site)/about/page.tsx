@@ -5,8 +5,7 @@ import { Icon } from "@/components/icon";
 import { Markdown } from "@/components/markdown";
 import { cmsPageMetadata } from "@/components/site/cms-page";
 import { CtaBanner, IndustryCard, PageHero, SectionHeading } from "@/components/site/ui";
-import { getIndustries, getPage, getServices, getSettings, getTeam } from "@/lib/content";
-import { categoryOrder, serviceCategories } from "@/lib/site";
+import { getIndustries, getPage, getServiceCategories, getServices, getSettings, getTeam } from "@/lib/content";
 import type { TeamMember } from "@/lib/types";
 
 export function generateMetadata() {
@@ -14,12 +13,13 @@ export function generateMetadata() {
 }
 
 export default async function AboutPage() {
-  const [page, { about, company }, services, industries, team] = await Promise.all([
+  const [page, { about, company }, services, industries, team, categories] = await Promise.all([
     getPage("about"),
     getSettings(),
     getServices(),
     getIndustries(),
     getTeam(),
+    getServiceCategories(),
   ]);
   if (!page) notFound();
   const leadership = team.filter((m) => m.is_leadership);
@@ -126,13 +126,13 @@ export default async function AboutPage() {
         <div className="container-page">
           <SectionHeading eyebrow="Capabilities" title="Five practices, one team" action={{ href: "/services", label: "All services" }} />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {categoryOrder.map((key) => {
+            {categories.map(({ key, label }) => {
               const items = topLevel.filter((s) => s.category === key);
               if (items.length === 0) return null;
               return (
                 <Link key={key} href={`/services#${key}`} className="card p-6 transition hover:shadow-md first:lg:col-span-2">
                   <Icon name={items[0].icon} className="size-5 text-brand-600" />
-                  <h3 className="mt-3 font-semibold">{serviceCategories[key].label}</h3>
+                  <h3 className="mt-3 font-semibold">{label}</h3>
                   <p className="mt-1 text-sm text-slate-600">{items.map((s) => s.title).join(" · ")}</p>
                 </Link>
               );

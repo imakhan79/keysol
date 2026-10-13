@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { CaseStudyCard, CtaBanner, EmptyState, PageHero } from "@/components/site/ui";
 import { getCaseStudies } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Case Studies",
   description: "How our clients use digital communication, software and marketing to achieve measurable results.",
   path: "/case-studies",
-});
+}),
+  );
+}
 
 export default async function CaseStudiesPage() {
   const studies = await getCaseStudies();

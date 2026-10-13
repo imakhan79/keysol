@@ -1,16 +1,26 @@
 import type { MetadataRoute } from "next";
-import { getCaseStudies, getIndustries, getPosts, getProjects, getServices, getSolutions } from "@/lib/content";
+import {
+  getCaseStudies,
+  getIndustries,
+  getPosts,
+  getProjects,
+  getSeoSettings,
+  getServices,
+  getSolutions,
+} from "@/lib/content";
 import { siteUrl } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [services, industries, projects, studies, posts, solutions] = await Promise.all([
+  const [services, industries, projects, studies, posts, solutions, seo] = await Promise.all([
     getServices(),
     getIndustries(),
     getProjects(),
     getCaseStudies(),
     getPosts(),
     getSolutions(),
+    getSeoSettings(),
   ]);
+  const hidden = new Set(seo.filter((s) => s.noindex).map((s) => (s.path === "/" ? "" : s.path)));
 
   const staticPages = [
     "",
@@ -29,11 +39,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/book-consultation",
     "/privacy",
     "/terms",
-  ].map((path) => ({
-    url: `${siteUrl}${path}`,
-    changeFrequency: "weekly" as const,
-    priority: path === "" ? 1 : path === "/services" || path === "/quote" ? 0.9 : 0.6,
-  }));
+  ]
+    .filter((path) => !hidden.has(path))
+    .map((path) => ({
+      url: `${siteUrl}${path}`,
+      changeFrequency: "weekly" as const,
+      priority: path === "" ? 1 : path === "/services" || path === "/quote" ? 0.9 : 0.6,
+    }));
 
   const entries = (prefix: string, rows: { slug: string; updated_at: string }[], priority: number) =>
     rows.map((row) => ({

@@ -4,13 +4,17 @@ import { CalendarCheck, Clock, Mail, MapPin, MessageCircle, Phone } from "lucide
 import { CallbackForm, LeadForm } from "@/components/site/lead-form";
 import { PageHero } from "@/components/site/ui";
 import { getSettings } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Contact us",
   description: "Get in touch about digital communication, software, e-commerce, marketing or hosting. We reply within one business day.",
   path: "/contact",
-});
+}),
+  );
+}
 
 export default async function ContactPage() {
   const { company, integrations } = await getSettings();

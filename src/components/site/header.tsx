@@ -1,15 +1,20 @@
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { Icon } from "@/components/icon";
-import { getServices, getSettings, getSolutions } from "@/lib/content";
-import { categoryOrder, companyNav, serviceCategories, workNav, type NavLink } from "@/lib/site";
+import { getServiceCategories, getServices, getSettings, getSolutions } from "@/lib/content";
+import { companyNav, workNav, type NavLink } from "@/lib/site";
 import { MobileNav, type NavGroup } from "./mobile-nav";
 
 export async function SiteHeader() {
-  const [{ company }, services, solutions] = await Promise.all([getSettings(), getServices(), getSolutions()]);
+  const [{ company }, services, solutions, categories] = await Promise.all([
+    getSettings(),
+    getServices(),
+    getSolutions(),
+    getServiceCategories(),
+  ]);
   const topLevel = services.filter((s) => !s.parent_id);
-  const serviceColumns = categoryOrder
-    .map((key) => ({ key, label: serviceCategories[key].label, items: topLevel.filter((s) => s.category === key) }))
+  const serviceColumns = categories
+    .map(({ key, label }) => ({ key, label, items: topLevel.filter((s) => s.category === key) }))
     .filter((c) => c.items.length > 0);
   const solutionLinks: NavLink[] = solutions.map((s) => ({ href: `/solutions/${s.slug}`, label: `For ${s.title}` }));
 

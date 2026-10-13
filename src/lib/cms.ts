@@ -1,4 +1,3 @@
-import { serviceCategories } from "./site";
 import type { ContentTag } from "./content";
 import type { Permission } from "./roles";
 
@@ -31,7 +30,7 @@ export type FieldDef = {
   required?: boolean;
   help?: string;
   options?: { value: string; label: string }[];
-  ref?: "services" | "industries" | "testimonials";
+  ref?: "services" | "industries" | "testimonials" | "serviceCategories" | "blogCategories";
   /** Layout hint: half-width on large screens. */
   half?: boolean;
 };
@@ -84,14 +83,7 @@ export const contentTypes: Record<string, ContentType> = {
     fields: [
       { name: "title", label: "Title", kind: "text", required: true, half: true },
       slugField,
-      {
-        name: "category",
-        label: "Category",
-        kind: "select",
-        required: true,
-        half: true,
-        options: Object.entries(serviceCategories).map(([value, c]) => ({ value, label: c.label })),
-      },
+      { name: "category", label: "Category", kind: "ref", ref: "serviceCategories", required: true, half: true },
       { name: "icon", label: "Icon", kind: "text", half: true, help: "e.g. message, code, globe, cart, server" },
       {
         name: "parent_id",
@@ -259,7 +251,6 @@ export const contentTypes: Record<string, ContentType> = {
     permission: "marketingContent",
     orderBy: { column: "published_at", ascending: false },
     columns: [
-      { name: "category", label: "Category" },
       { name: "author_name", label: "Author" },
       { name: "published_at", label: "Date" },
     ],
@@ -270,11 +261,12 @@ export const contentTypes: Record<string, ContentType> = {
       { name: "author_name", label: "Author", kind: "text", half: true },
       { name: "published_at", label: "Publish date", kind: "datetime", half: true },
       {
-        name: "category",
+        name: "category_id",
         label: "Category",
-        kind: "text",
+        kind: "ref",
+        ref: "blogCategories",
         half: true,
-        help: "e.g. Software Solutions, Digital Marketing. Readers can filter by category.",
+        help: "Manage the list under Content → Blog categories.",
       },
       { name: "excerpt", label: "Excerpt", kind: "textarea" },
       { name: "cover_image_url", label: "Cover image", kind: "image" },
@@ -282,6 +274,83 @@ export const contentTypes: Record<string, ContentType> = {
       { name: "body", label: "Article", kind: "markdown" },
       { name: "is_published", label: "Published", kind: "boolean" },
       ...seoFields,
+    ],
+  },
+  "service-categories": {
+    key: "service-categories",
+    table: "service_categories",
+    label: "Service categories",
+    singular: "Service category",
+    titleField: "label",
+    permission: "marketingContent",
+    orderBy: { column: "sort_order", ascending: true },
+    columns: [
+      { name: "key", label: "Key" },
+      { name: "sort_order", label: "Order" },
+    ],
+    publicPath: (r) => `/services#${r.key}`,
+    fields: [
+      { name: "label", label: "Name", kind: "text", required: true, half: true },
+      {
+        name: "key",
+        label: "Key",
+        kind: "slug",
+        required: true,
+        half: true,
+        help: "Used in links (/services#key). Changing it updates linked services automatically.",
+      },
+      { name: "blurb", label: "Short description", kind: "textarea", help: "Shown on the services page, homepage and menus." },
+      { name: "sort_order", label: "Sort order", kind: "number", half: true },
+      { name: "is_published", label: "Published", kind: "boolean", half: true },
+    ],
+  },
+  "blog-categories": {
+    key: "blog-categories",
+    table: "blog_categories",
+    label: "Blog categories",
+    singular: "Blog category",
+    titleField: "name",
+    permission: "marketingContent",
+    orderBy: { column: "sort_order", ascending: true },
+    columns: [
+      { name: "slug", label: "Slug" },
+      { name: "sort_order", label: "Order" },
+    ],
+    publicPath: (r) => `/blog?category=${r.slug}`,
+    fields: [
+      { name: "name", label: "Name", kind: "text", required: true, half: true },
+      slugField,
+      { name: "description", label: "Description", kind: "textarea" },
+      { name: "sort_order", label: "Sort order", kind: "number", half: true },
+      { name: "is_published", label: "Published", kind: "boolean", half: true },
+      ...seoFields,
+    ],
+  },
+  seo: {
+    key: "seo",
+    table: "seo_settings",
+    label: "SEO settings",
+    singular: "Page SEO",
+    titleField: "path",
+    permission: "marketingContent",
+    orderBy: { column: "path", ascending: true },
+    columns: [
+      { name: "meta_title", label: "Meta title" },
+      { name: "noindex", label: "Hidden from search" },
+    ],
+    publicPath: (r) => String(r.path),
+    fields: [
+      {
+        name: "path",
+        label: "Page path",
+        kind: "text",
+        required: true,
+        help: "A fixed page such as /, /about, /services, /contact, /quote or /blog. Services, posts and other CMS items have their own SEO fields.",
+      },
+      { name: "meta_title", label: "Meta title", kind: "text", help: "Aim for under 60 characters." },
+      { name: "meta_description", label: "Meta description", kind: "textarea", help: "Aim for 120–160 characters." },
+      { name: "og_image_url", label: "Social sharing image", kind: "image", help: "1200×630 recommended." },
+      { name: "noindex", label: "Hide this page from search engines", kind: "boolean" },
     ],
   },
   pages: {

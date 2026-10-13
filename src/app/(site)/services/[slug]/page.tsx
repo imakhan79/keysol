@@ -23,12 +23,13 @@ import {
   getFaqs,
   getProjects,
   getService,
+  getServiceCategories,
   getServices,
   getSettings,
   getSlugs,
   getTestimonials,
 } from "@/lib/content";
-import { serviceCategories, siteUrl } from "@/lib/site";
+import { siteUrl } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {
@@ -57,14 +58,16 @@ async function ServiceDetail({ params }: Pick<PageProps<"/services/[slug]">, "pa
   const service = await getService((await params).slug);
   if (!service) notFound();
 
-  const [allServices, projects, studies, testimonials, faqs, { company }] = await Promise.all([
+  const [allServices, projects, studies, testimonials, faqs, { company }, categories] = await Promise.all([
     getServices(),
     getProjects({ serviceId: service.id }),
     getCaseStudies({ serviceId: service.id }),
     getTestimonials(),
     getFaqs(),
     getSettings(),
+    getServiceCategories(),
   ]);
+  const categoryLabel = categories.find((c) => c.key === service.category)?.label ?? "Services";
   const parent = allServices.find((s) => s.id === service.parent_id);
   const children = allServices.filter((s) => s.parent_id === service.id);
   const familyIds = new Set([service.id, ...children.map((c) => c.id)]);
@@ -88,7 +91,7 @@ async function ServiceDetail({ params }: Pick<PageProps<"/services/[slug]">, "pa
           "@type": "Service",
           name: service.title,
           description: service.short_description,
-          serviceType: serviceCategories[service.category].label,
+          serviceType: categoryLabel,
           url: `${siteUrl}/services/${service.slug}`,
           provider: { "@type": "Organization", name: company.name, url: siteUrl },
           ...(children.length > 0 && {
@@ -104,7 +107,7 @@ async function ServiceDetail({ params }: Pick<PageProps<"/services/[slug]">, "pa
         }}
       />
       <PageHero
-        eyebrow={parent ? parent.title : serviceCategories[service.category].label}
+        eyebrow={parent ? parent.title : categoryLabel}
         title={service.title}
         description={service.short_description}
         crumbs={crumbs}

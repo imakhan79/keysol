@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { CtaBanner, EmptyState, IndustryCard, PageHero } from "@/components/site/ui";
 import { getIndustries } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Industries",
   description: "Technology, communication and marketing solutions tailored to retail, healthcare, education, finance and more.",
   path: "/industries",
-});
+}),
+  );
+}
 
 export default async function IndustriesPage() {
   const industries = await getIndustries();

@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
 import { CtaBanner, EmptyState, IndustryCard, PageHero, SectionHeading, SolutionCard } from "@/components/site/ui";
 import { getIndustries, getSolutions } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Solutions",
   description:
     "Technology solutions for business owners, IT managers, marketing managers, startup founders, SMEs, enterprises and procurement teams.",
   path: "/solutions",
-});
+}),
+  );
+}
 
 export default async function SolutionsPage() {
   const [solutions, industries] = await Promise.all([getSolutions(), getIndustries()]);

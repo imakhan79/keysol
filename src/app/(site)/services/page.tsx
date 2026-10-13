@@ -1,19 +1,22 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { CtaBanner, PageHero, ServiceCard } from "@/components/site/ui";
-import { getServices } from "@/lib/content";
-import { categoryOrder, serviceCategories } from "@/lib/site";
-import { pageMetadata } from "@/lib/seo";
+import { getServiceCategories, getServices } from "@/lib/content";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Services",
   description:
     "Digital communication, SMS, software, web and mobile development, CMS, CRM, ERP, e-commerce, digital marketing, SEO, hosting and support.",
   path: "/services",
-});
+}),
+  );
+}
 
 export default async function ServicesPage() {
-  const services = await getServices();
+  const [services, categories] = await Promise.all([getServices(), getServiceCategories()]);
 
   return (
     <>
@@ -24,27 +27,27 @@ export default async function ServicesPage() {
         crumbs={[{ href: "/services", label: "Services" }]}
       >
         <nav aria-label="Service categories" className="mt-8 flex flex-wrap gap-2">
-          {categoryOrder.map((key) => (
+          {categories.map(({ key, label }) => (
             <a
               key={key}
               href={`#${key}`}
               className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-sm text-slate-200 hover:bg-white/10"
             >
-              {serviceCategories[key].label}
+              {label}
             </a>
           ))}
         </nav>
       </PageHero>
 
       <div className="container-page space-y-20 py-20">
-        {categoryOrder.map((key) => {
+        {categories.map(({ key, label, blurb }) => {
           const items = services.filter((s) => s.category === key && !s.parent_id);
           if (items.length === 0) return null;
           return (
             <section key={key} id={key} className="scroll-mt-24">
               <div className="mb-8 max-w-2xl">
-                <h2 className="text-2xl font-semibold tracking-tight">{serviceCategories[key].label}</h2>
-                <p className="mt-2 text-slate-600">{serviceCategories[key].blurb}</p>
+                <h2 className="text-2xl font-semibold tracking-tight">{label}</h2>
+                <p className="mt-2 text-slate-600">{blurb}</p>
               </div>
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {items.map((service) => {

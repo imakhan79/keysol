@@ -3,13 +3,17 @@ import type { Metadata } from "next";
 import { FaqJsonLd, FaqList } from "@/components/site/faq-list";
 import { CtaBanner, EmptyState, PageHero } from "@/components/site/ui";
 import { getFaqs } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Frequently Asked Questions",
   description: "Answers about our services, pricing, quotations, project process, technology and support.",
   path: "/faqs",
-});
+}),
+  );
+}
 
 export default async function FaqsPage() {
   const faqs = await getFaqs();

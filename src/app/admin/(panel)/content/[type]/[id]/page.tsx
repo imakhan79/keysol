@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { requireStaff } from "@/lib/auth";
 import { contentTypes } from "@/lib/cms";
+import { defaultServiceCategories } from "@/lib/site";
 import { createSessionClient } from "@/lib/supabase/server";
 import { AdminHeader } from "../../../ui";
 import { ContentForm, DeleteContentButton } from "./content-form";
@@ -24,7 +25,7 @@ export default async function ContentEditPage(props: PageProps<"/admin/content/[
 
   const supabase = await createSessionClient();
   const needsRefs = type.fields.flatMap((f) => (f.kind === "ref" ? [f.ref!] : f.kind === "serviceSlugs" ? ["services"] : []));
-  const [record, services, industries, testimonials] = await Promise.all([
+  const [record, services, industries, testimonials, serviceCategories, blogCategories] = await Promise.all([
     isNew ? Promise.resolve({ data: null }) : supabase.from(type.table).select("*").eq("id", id).maybeSingle(),
     needsRefs.includes("services")
       ? supabase.from("services").select("id, slug, title").order("sort_order")
@@ -34,6 +35,12 @@ export default async function ContentEditPage(props: PageProps<"/admin/content/[
       : Promise.resolve({ data: [] }),
     needsRefs.includes("testimonials")
       ? supabase.from("testimonials").select("id, author_name, company").order("sort_order")
+      : Promise.resolve({ data: [] }),
+    needsRefs.includes("serviceCategories")
+      ? supabase.from("service_categories").select("key, label").order("sort_order")
+      : Promise.resolve({ data: [] }),
+    needsRefs.includes("blogCategories")
+      ? supabase.from("blog_categories").select("id, name").order("sort_order")
       : Promise.resolve({ data: [] }),
   ]);
   if (!isNew && !record.data) notFound();
@@ -45,6 +52,12 @@ export default async function ContentEditPage(props: PageProps<"/admin/content/[
       .map((s) => ({ value: s.id, label: s.title })),
     serviceSlugs: ((services.data ?? []) as { slug: string; title: string }[]).map((s) => ({ value: s.slug, label: s.title })),
     industries: ((industries.data ?? []) as { id: string; name: string }[]).map((i) => ({ value: i.id, label: i.name })),
+    // Before the categories migration the table is missing: fall back to the built-in list.
+    serviceCategories: (serviceCategories.data?.length
+      ? (serviceCategories.data as { key: string; label: string }[])
+      : defaultServiceCategories
+    ).map((c) => ({ value: c.key, label: c.label })),
+    blogCategories: ((blogCategories.data ?? []) as { id: string; name: string }[]).map((c) => ({ value: c.id, label: c.name })),
     testimonials: ((testimonials.data ?? []) as { id: string; author_name: string; company: string }[]).map((t) => ({
       value: t.id,
       label: [t.author_name, t.company].filter(Boolean).join(", "),

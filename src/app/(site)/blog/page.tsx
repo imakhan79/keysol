@@ -3,15 +3,19 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { Search, X } from "lucide-react";
 import { CtaBanner, EmptyState, PageHero, PostCard } from "@/components/site/ui";
-import { getPosts } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
-import type { BlogPost } from "@/lib/types";
+import { getBlogCategories, getPosts } from "@/lib/content";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
+import type { BlogCategory, BlogPost } from "@/lib/types";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Blog",
   description: "Practical insights on digital communication, software, e-commerce, marketing and SEO.",
   path: "/blog",
-});
+}),
+  );
+}
 
 export default function BlogPage(props: PageProps<"/blog">) {
   return (
@@ -34,12 +38,13 @@ export default function BlogPage(props: PageProps<"/blog">) {
 
 type Filters = { q: string; category: string; tag: string; author: string };
 
-function matches(post: BlogPost, { q, category, tag, author }: Filters) {
-  if (category && post.category !== category) return false;
+function matches(post: BlogPost, { q, category, tag, author }: Filters, categories: BlogCategory[]) {
+  const postCategory = categories.find((c) => c.id === post.category_id);
+  if (category && postCategory?.slug !== category) return false;
   if (tag && !post.tags.includes(tag)) return false;
   if (author && post.author_name !== author) return false;
   if (!q) return true;
-  const haystack = [post.title, post.excerpt, post.category, post.author_name, ...post.tags, post.body].join(" ").toLowerCase();
+  const haystack = [post.title, post.excerpt, postCategory?.name, post.author_name, ...post.tags, post.body].join(" ").toLowerCase();
   return q
     .toLowerCase()
     .split(/\s+/)
@@ -54,12 +59,13 @@ function hrefWith(filters: Filters, change: Partial<Filters>) {
 }
 
 async function BlogListing({ searchParams }: Pick<PageProps<"/blog">, "searchParams">) {
-  const [sp, posts] = await Promise.all([searchParams, getPosts()]);
+  const [sp, posts, allCategories] = await Promise.all([searchParams, getPosts(), getBlogCategories()]);
   const param = (key: string) => (typeof sp[key] === "string" ? (sp[key] as string).trim().slice(0, 100) : "");
   const filters: Filters = { q: param("q"), category: param("category"), tag: param("tag"), author: param("author") };
-  const results = posts.filter((p) => matches(p, filters));
-
-  const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))].sort();
+  const results = posts.filter((p) => matches(p, filters, allCategories));
+  const categoryName = (id: string | null) => allCategories.find((c) => c.id === id)?.name;
+  // Only list categories that have published posts.
+  const categories = allCategories.filter((c) => posts.some((p) => p.category_id === c.id));
   const tags = [...new Set(posts.flatMap((p) => p.tags))].sort();
   const active = Object.entries(filters).filter(([, v]) => v) as [keyof Filters, string][];
   const labels: Record<keyof Filters, string> = { q: "Search", category: "Category", tag: "Tag", author: "Author" };
@@ -78,7 +84,7 @@ async function BlogListing({ searchParams }: Pick<PageProps<"/blog">, "searchPar
                 href={hrefWith(filters, { [key]: "" })}
                 className="inline-flex items-center gap-1 rounded-full bg-brand-50 px-3 py-1 text-brand-700 hover:bg-brand-100"
               >
-                {labels[key]}: {value} <X className="size-3.5" aria-label="Remove filter" />
+                {labels[key]}: {key === "category" ? (allCategories.find((c) => c.slug === value)?.name ?? value) : value} <X className="size-3.5" aria-label="Remove filter" />
               </Link>
             ))}
             <Link href="/blog" className="text-slate-500 underline hover:text-brand-600">
@@ -94,7 +100,7 @@ async function BlogListing({ searchParams }: Pick<PageProps<"/blog">, "searchPar
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             {results.map((post) => (
-              <PostCard key={post.id} post={post} />
+              <PostCard key={post.id} post={post} category={categoryName(post.category_id)} />
             ))}
           </div>
         )}
@@ -119,14 +125,14 @@ async function BlogListing({ searchParams }: Pick<PageProps<"/blog">, "searchPar
             <h2 className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Categories</h2>
             <ul className="mt-3 space-y-1 text-sm">
               {categories.map((c) => (
-                <li key={c}>
+                <li key={c.id}>
                   <Link
-                    href={hrefWith(filters, { category: filters.category === c ? "" : c })}
-                    aria-current={filters.category === c ? "true" : undefined}
+                    href={hrefWith(filters, { category: filters.category === c.slug ? "" : c.slug })}
+                    aria-current={filters.category === c.slug ? "true" : undefined}
                     className="flex justify-between rounded-md px-2 py-1.5 text-slate-700 hover:bg-slate-50 hover:text-brand-700 aria-[current]:bg-brand-50 aria-[current]:font-medium aria-[current]:text-brand-700"
                   >
-                    {c}
-                    <span className="text-slate-400">{posts.filter((p) => p.category === c).length}</span>
+                    {c.name}
+                    <span className="text-slate-400">{posts.filter((p) => p.category_id === c.id).length}</span>
                   </Link>
                 </li>
               ))}

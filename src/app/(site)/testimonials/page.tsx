@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { CtaBanner, EmptyState, PageHero, TestimonialCard } from "@/components/site/ui";
 import { getIndustries, getTestimonials } from "@/lib/content";
-import { pageMetadata } from "@/lib/seo";
+import { pageMetadata, withSeoOverrides } from "@/lib/seo";
 
-export const metadata: Metadata = pageMetadata({
+export async function generateMetadata(): Promise<Metadata> {
+  return withSeoOverrides(
+    pageMetadata({
   title: "Testimonials",
   description: "What clients say about working with us.",
   path: "/testimonials",
-});
+}),
+  );
+}
 
 export default async function TestimonialsPage() {
   const [testimonials, industries] = await Promise.all([getTestimonials(), getIndustries()]);

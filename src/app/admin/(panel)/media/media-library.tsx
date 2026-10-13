@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { Check, Copy, Loader2, Trash2, Upload } from "lucide-react";
+import { uploadMedia } from "@/lib/media";
 import { createBrowserSupabase } from "@/lib/supabase/browser";
 
-type Item = { name: string; url: string; size: number; created_at: string };
+type Item = { name: string; url: string; size: number; created_at: string; alt: string };
 
 const FOLDER = "uploads";
 
@@ -24,6 +25,9 @@ export function MediaLibrary() {
       setItems([]);
       return;
     }
+    // Alt text and metadata from the media table (empty until the migration runs).
+    const { data: rows } = await supabase.from("media").select("url, alt_text");
+    const alts = new Map((rows ?? []).map((r: { url: string; alt_text: string }) => [r.url, r.alt_text]));
     setItems(
       (data ?? [])
         .filter((f) => f.id)
@@ -32,7 +36,9 @@ export function MediaLibrary() {
           url: supabase.storage.from("media").getPublicUrl(`${FOLDER}/${f.name}`).data.publicUrl,
           size: (f.metadata as { size?: number } | null)?.size ?? 0,
           created_at: f.created_at ?? "",
-        })),
+          alt: "",
+        }))
+        .map((item) => ({ ...item, alt: alts.get(item.url) ?? "" })),
     );
   }, []);
 
@@ -46,21 +52,29 @@ export function MediaLibrary() {
       setError("");
       const supabase = createBrowserSupabase();
       for (const file of Array.from(files)) {
-        const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
-        const base = file.name.replace(/\.[^.]+$/, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40);
-        const { error: err } = await supabase.storage
-          .from("media")
-          .upload(`${FOLDER}/${Date.now()}-${base}.${ext}`, file, { contentType: file.type });
-        if (err) setError(`${file.name}: ${err.message}`);
+        const { error: err } = await uploadMedia(supabase, file, FOLDER);
+        if (err) setError(`${file.name}: ${err}`);
       }
       await load();
     });
 
-  const remove = (name: string) =>
+  const remove = (item: Item) =>
     start(async () => {
-      const { error: err } = await createBrowserSupabase().storage.from("media").remove([`${FOLDER}/${name}`]);
+      const supabase = createBrowserSupabase();
+      const { error: err } = await supabase.storage.from("media").remove([`${FOLDER}/${item.name}`]);
       if (err) setError(err.message);
+      else await supabase.from("media").delete().eq("url", item.url);
       await load();
+    });
+
+  const saveAlt = (item: Item, alt: string) =>
+    start(async () => {
+      if (alt === item.alt) return;
+      const { error: err } = await createBrowserSupabase()
+        .from("media")
+        .upsert({ url: item.url, storage_path: `${FOLDER}/${item.name}`, file_name: item.name, alt_text: alt }, { onConflict: "url" });
+      if (err) setError(`Alt text not saved: ${err.message}`);
+      else setItems((list) => list?.map((i) => (i.url === item.url ? { ...i, alt } : i)) ?? null);
     });
 
   const copy = async (url: string) => {
@@ -100,6 +114,13 @@ export function MediaLibrary() {
                 <p className="truncate text-xs text-slate-600" title={item.name}>
                   {item.name}
                 </p>
+                <input
+                  aria-label={`Alt text for ${item.name}`}
+                  defaultValue={item.alt}
+                  placeholder="Alt text (for SEO & accessibility)"
+                  onBlur={(e) => saveAlt(item, e.target.value.trim())}
+                  className="field px-2 py-1 text-xs"
+                />
                 <div className="flex gap-2">
                   <button type="button" onClick={() => copy(item.url)} className="btn-secondary flex-1 px-2 py-1.5 text-xs">
                     {copied === item.url ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
@@ -107,7 +128,7 @@ export function MediaLibrary() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => remove(item.name)}
+                    onClick={() => remove(item)}
                     disabled={busy}
                     className="btn-danger px-2 py-1.5"
                     aria-label={`Delete ${item.name}`}

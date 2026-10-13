@@ -1,4 +1,4 @@
-import type { ServiceCategory } from "./types";
+import type { ServiceCategoryRow } from "./types";
 
 // Explicit setting first, then Vercel's production domain (set automatically on Vercel), then local dev.
 const vercelProductionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
@@ -7,30 +7,19 @@ export const siteUrl = (
   (vercelProductionHost ? `https://${vercelProductionHost}` : "http://localhost:3000")
 ).replace(/\/$/, "");
 
-export const serviceCategories: Record<ServiceCategory, { label: string; blurb: string }> = {
-  development: {
+/** Fallback when the service_categories table is unavailable; the database is the source of truth. */
+export const defaultServiceCategories: ServiceCategoryRow[] = [
+  {
+    key: "development",
     label: "Software Solutions",
     blurb: "Custom software, web, mobile and enterprise apps, APIs, CRM, ERP, HRMS, CMS, inventory and automation.",
+    sort_order: 10,
   },
-  communication: {
-    label: "Digital Communication",
-    blurb: "SMS, messaging and omnichannel customer communication.",
-  },
-  ecommerce: {
-    label: "E-commerce",
-    blurb: "Online stores, payments and marketplace integrations.",
-  },
-  marketing: {
-    label: "Digital Marketing",
-    blurb: "SEO, social, content and paid campaigns that generate leads.",
-  },
-  infrastructure: {
-    label: "Hosting & Support",
-    blurb: "Hosting, domains, SSL, backups, monitoring and support.",
-  },
-};
-
-export const categoryOrder = Object.keys(serviceCategories) as ServiceCategory[];
+  { key: "communication", label: "Digital Communication", blurb: "SMS, messaging and omnichannel customer communication.", sort_order: 20 },
+  { key: "ecommerce", label: "E-commerce", blurb: "Online stores, payments and marketplace integrations.", sort_order: 30 },
+  { key: "marketing", label: "Digital Marketing", blurb: "SEO, social, content and paid campaigns that generate leads.", sort_order: 40 },
+  { key: "infrastructure", label: "Hosting & Support", blurb: "Hosting, domains, SSL, backups, monitoring and support.", sort_order: 50 },
+];
 
 export type NavLink = { href: string; label: string; description?: string };
 
