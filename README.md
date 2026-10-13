@@ -3,21 +3,33 @@
 Corporate website and lead-generation platform for Digitora Next: digital communication & SMS, software / web / mobile
 development, CMS, CRM, ERP, e-commerce, digital marketing, SEO, social media, hosting, maintenance and support.
 
-**Stack:** Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind CSS 4 · Supabase (Postgres, Auth, Storage)
+**Stack:** Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind CSS 4 · Motion · Supabase (Postgres, Auth,
+Storage) · Vercel
+
+**Live:** https://digitoranext.vercel.app
+
+## Documentation
+
+| Document | For |
+| --- | --- |
+| [Admin user guide](docs/admin-guide.md) | Staff managing leads, content, SEO and settings |
+| [Deployment & operations](docs/deployment.md) | Environment variables, releases, migrations, go-live checklist, monitoring |
+| [Technical architecture](docs/architecture.md) | Code layout, data model, security, lead flow, caching, analytics, integrations |
+| [Test report](docs/testing.md) | Lighthouse scores, acceptance criteria, security checks |
 
 ## What's included
 
 | Area | Details |
 | --- | --- |
-| Public site | Home, About Us, Services (27 service and sub-service pages), Solutions (by role and organisation), Industries, Portfolio, Case Studies, Testimonials, Blog, FAQs, Support, Contact Us, Request a Quote, Privacy, Terms |
-| Lead generation | Quote requests, contact form, service-page enquiries, callback requests, newsletter sign-up, floating WhatsApp/call buttons. All capture UTM, referrer and landing page, organisation type and size; spam traps and per-IP throttle |
-| CRM | `/admin/leads`: pipeline statuses, assignment to sales reps, estimated value, activity notes, search and filters by status/type, CSV export |
-| CMS | `/admin/content/*`: create, edit, publish and delete every content type, with markdown preview and image uploads |
-| Admin | Dashboard (traffic, leads, conversion, pipeline, top pages and sources), site settings, media library, role-based access |
-| SEO | Per-page metadata and canonical URLs, Open Graph image, JSON-LD (Organization, Service, BlogPosting), `sitemap.xml`, `robots.txt` |
-| Analytics | Built-in cookieless page views (no IPs stored) plus optional Google Analytics 4 with a `generate_lead` conversion event |
+| Public site | Home, About Us, Services (27 service and sub-service pages), Solutions (by role and organisation), Industries, Portfolio, Case Studies, Testimonials, Blog (search, categories, tags, related articles, sharing), FAQs, Support, Contact Us, Request a Quote, Book a Consultation, Privacy, Terms |
+| Lead generation | Quote requests, contact form, service-page enquiries, consultation bookings, callback requests, newsletter sign-up, floating WhatsApp/call/email buttons. All capture UTM, referrer and landing page; spam traps and per-IP throttle |
+| CRM | `/admin/leads`: pipeline (new → contacted → qualified → consultation → proposal → negotiation → won → onboarding), assignment, estimated value, activity notes, search, filters, CSV export |
+| CMS | `/admin/content/*`: every content type including service and blog categories and per-page SEO settings, with markdown preview, image uploads and a media library with alt text |
+| Admin | Dashboard (visitors, conversion rate, CTA/WhatsApp/phone/email clicks, lead sources, form submissions, service views, pipeline), site settings, role-based access |
+| SEO | Metadata, canonical URLs, Open Graph, JSON-LD (Organization/ProfessionalService, Service, BlogPosting, FAQPage, BreadcrumbList), `sitemap.xml`, `robots.txt`, optimised images, admin-editable overrides |
+| Analytics | Built-in cookieless visitors, page views and click events (no IPs stored) plus optional Google Analytics 4 |
 | Security | Row Level Security on every table, roles in `app_metadata`, server-side re-authorisation in every admin action, security headers |
-| Integrations | Lead webhook (Slack, Teams, Zapier, Make, n8n), GA4, Supabase Storage |
+| Integrations | WhatsApp, Google Analytics 4, Search Console/Bing verification, Google Maps, calendar booking link, lead webhook (Slack, Teams, Zapier, Make, n8n) |
 
 ## Setup
 
@@ -60,15 +72,32 @@ The same rules are enforced by Row Level Security in the database, not just hidd
   client-approved content, then publish them.
 - Update company details, contact info, social links and homepage stats in **Admin → Settings**.
 - Have the Privacy Policy and Terms reviewed by a legal professional.
-- Set `NEXT_PUBLIC_SITE_URL` to the production domain, and optionally `NEXT_PUBLIC_GA_MEASUREMENT_ID` and `LEAD_WEBHOOK_URL`.
+- Set `NEXT_PUBLIC_SITE_URL` to the production domain, `ANALYTICS_SALT` to a random secret, and `LEAD_WEBHOOK_URL` for
+  lead notifications. Add the GA4 ID and Search Console token in **Admin → Settings → Integrations & SEO**.
 - Put a WAF / edge rate limit in front of the site. The built-in form throttle is per server instance only.
+
+See the full [go-live checklist](docs/deployment.md#custom-domain--go-live-checklist).
+
+## Handover status
+
+Built and deployed. Open items:
+
+1. **Six database migrations are not yet applied to production** (`20261013063000` to `20261013110000`). Run
+   `npm run db:migrate`. Until then the site uses fallbacks, and these stay inactive: Marketing/Hosting service
+   content, Manufacturing and Corporate industries, new case study and testimonial fields, blog categories,
+   consultation leads as their own type, the consultation/negotiation/onboarding stages, unique visitors and click
+   analytics, editable service categories, media alt text and SEO settings.
+2. **Lead notifications**: set `LEAD_WEBHOOK_URL`, or add an email provider.
+3. **Client content**: logo, company details, real portfolio, case studies and testimonials, legal review.
+4. **Not built (need a provider)**: email sending, SMS gateway, payment gateway. Phase 2 (advanced CRM, customer
+   portal, marketing automation) and Phase 3 (AI features) are future work.
 
 ## Project layout
 
 ```
 src/app/(site)/       public pages
 src/app/admin/        admin panel (login, dashboard, leads, content, media, settings) and server actions
-src/app/api/track/    first-party page-view endpoint
+src/app/api/track/    first-party analytics endpoint (page views, click events)
 src/lib/content.ts    cached public data access (tagged; admin saves refresh it instantly)
 src/lib/auth.ts       staff session + role checks
 src/lib/cms.ts        content-type definitions driving the admin editor
