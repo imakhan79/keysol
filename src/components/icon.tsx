@@ -6,6 +6,7 @@ import {
   Building2,
   ClipboardCheck,
   Compass,
+  Factory,
   Rocket,
   Workflow,
   BookOpen,
@@ -63,6 +64,7 @@ export const iconMap: Record<string, LucideIcon> = {
   compass: Compass,
   chart: BarChart3,
   briefcase: Briefcase,
+  factory: Factory,
   clipboard: ClipboardCheck,
 };
 

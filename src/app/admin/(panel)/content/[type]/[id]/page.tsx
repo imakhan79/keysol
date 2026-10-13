@@ -24,13 +24,16 @@ export default async function ContentEditPage(props: PageProps<"/admin/content/[
 
   const supabase = await createSessionClient();
   const needsRefs = type.fields.flatMap((f) => (f.kind === "ref" ? [f.ref!] : f.kind === "serviceSlugs" ? ["services"] : []));
-  const [record, services, industries] = await Promise.all([
+  const [record, services, industries, testimonials] = await Promise.all([
     isNew ? Promise.resolve({ data: null }) : supabase.from(type.table).select("*").eq("id", id).maybeSingle(),
     needsRefs.includes("services")
       ? supabase.from("services").select("id, slug, title").order("sort_order")
       : Promise.resolve({ data: [] }),
     needsRefs.includes("industries")
       ? supabase.from("industries").select("id, name").order("sort_order")
+      : Promise.resolve({ data: [] }),
+    needsRefs.includes("testimonials")
+      ? supabase.from("testimonials").select("id, author_name, company").order("sort_order")
       : Promise.resolve({ data: [] }),
   ]);
   if (!isNew && !record.data) notFound();
@@ -42,6 +45,10 @@ export default async function ContentEditPage(props: PageProps<"/admin/content/[
       .map((s) => ({ value: s.id, label: s.title })),
     serviceSlugs: ((services.data ?? []) as { slug: string; title: string }[]).map((s) => ({ value: s.slug, label: s.title })),
     industries: ((industries.data ?? []) as { id: string; name: string }[]).map((i) => ({ value: i.id, label: i.name })),
+    testimonials: ((testimonials.data ?? []) as { id: string; author_name: string; company: string }[]).map((t) => ({
+      value: t.id,
+      label: [t.author_name, t.company].filter(Boolean).join(", "),
+    })),
   };
   const path = !isNew && row.is_published ? type.publicPath?.(row) : undefined;
 

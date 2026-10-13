@@ -20,7 +20,7 @@ export function ContentForm({
   id: string | null;
   fields: FieldDef[];
   values: Record<string, unknown>;
-  refOptions: Record<"services" | "industries" | "serviceSlugs", Option[]>;
+  refOptions: Record<"services" | "industries" | "testimonials" | "serviceSlugs", Option[]>;
 }) {
   const [state, action, pending] = useActionState<FormState, FormData>(saveContent.bind(null, typeKey, id), {});
   const main = fields.filter((f) => !f.name.startsWith("seo_"));
@@ -189,6 +189,8 @@ function FieldInput({ field, value, options }: { field: FieldDef; value: unknown
       return <DateTimeField id={id} field={field} initial={str} label={label} />;
     case "image":
       return <ImageField id={id} field={field} initial={str} label={label} />;
+    case "images":
+      return <ImagesField id={id} field={field} initial={Array.isArray(value) ? (value as string[]) : []} label={label} />;
     default:
       return (
         <>
@@ -269,8 +271,10 @@ function DateTimeField({ id, field, initial, label }: { id: string; field: Field
   );
 }
 
-function ImageField({ id, field, initial, label }: { id: string; field: FieldDef; initial: string; label: React.ReactNode }) {
-  const [url, setUrl] = useState(initial);
+const imageTypes = "image/png,image/jpeg,image/webp,image/gif,image/avif,image/svg+xml";
+
+/** Uploads to the public media bucket and hands back the public URL. */
+function useMediaUpload(onUploaded: (url: string) => void) {
   const [error, setError] = useState("");
   const [uploading, start] = useTransition();
 
@@ -285,8 +289,15 @@ function ImageField({ id, field, initial, label }: { id: string; field: FieldDef
         setError(err.message);
         return;
       }
-      setUrl(supabase.storage.from("media").getPublicUrl(path).data.publicUrl);
+      onUploaded(supabase.storage.from("media").getPublicUrl(path).data.publicUrl);
     });
+
+  return { upload, uploading, error };
+}
+
+function ImageField({ id, field, initial, label }: { id: string; field: FieldDef; initial: string; label: React.ReactNode }) {
+  const [url, setUrl] = useState(initial);
+  const { upload, uploading, error } = useMediaUpload(setUrl);
 
   return (
     <>
@@ -311,7 +322,7 @@ function ImageField({ id, field, initial, label }: { id: string; field: FieldDef
             Upload image
             <input
               type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif,image/avif,image/svg+xml"
+              accept={imageTypes}
               className="sr-only"
               onChange={(e) => e.target.files?.[0] && upload(e.target.files[0])}
             />
@@ -319,6 +330,53 @@ function ImageField({ id, field, initial, label }: { id: string; field: FieldDef
           {error && <p className="text-sm text-red-600">{error}</p>}
         </div>
       </div>
+    </>
+  );
+}
+
+function ImagesField({ id, field, initial, label }: { id: string; field: FieldDef; initial: string[]; label: React.ReactNode }) {
+  const [text, setText] = useState(initial.join("\n"));
+  const { upload, uploading, error } = useMediaUpload((url) => setText((t) => (t.trim() ? `${t.trim()}\n${url}` : url)));
+  const urls = text
+    .split(/\r?\n/)
+    .map((u) => u.trim())
+    .filter(Boolean);
+
+  return (
+    <>
+      {label}
+      {urls.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {urls.map((u) => (
+            // eslint-disable-next-line @next/next/no-img-element -- preview of arbitrary CMS URL
+            <img key={u} src={u} alt="" className="h-20 w-32 rounded-lg border border-slate-200 object-cover" />
+          ))}
+        </div>
+      )}
+      <textarea
+        id={id}
+        name={field.name}
+        rows={4}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="https://… (one per line)"
+        className="field font-mono text-[13px]"
+      />
+      <div className="mt-2 flex flex-wrap items-center gap-3">
+        <label className="btn-secondary cursor-pointer">
+          {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+          Upload images
+          <input
+            type="file"
+            multiple
+            accept={imageTypes}
+            className="sr-only"
+            onChange={(e) => Array.from(e.target.files ?? []).forEach(upload)}
+          />
+        </label>
+        {field.help && <span className="text-xs text-slate-500">{field.help}</span>}
+      </div>
+      {error && <p className="mt-1.5 text-sm text-red-600">{error}</p>}
     </>
   );
 }

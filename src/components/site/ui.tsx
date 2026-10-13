@@ -102,8 +102,8 @@ export function CtaBanner({
             <Link href="/quote" className="btn bg-white text-brand-700 hover:bg-brand-50">
               Request a quote
             </Link>
-            <Link href="/contact" className="btn-ghost-light">
-              Talk to us
+            <Link href="/book-consultation" className="btn-ghost-light">
+              Book a consultation
             </Link>
           </div>
         </div>
@@ -215,7 +215,7 @@ export function CaseStudyCard({ study }: { study: CaseStudy }) {
   );
 }
 
-export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
+export function TestimonialCard({ testimonial, industry }: { testimonial: Testimonial; industry?: string }) {
   return (
     <figure className="card flex h-full flex-col p-6">
       <Quote className="size-6 text-brand-300" aria-hidden="true" />
@@ -245,6 +245,7 @@ export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
           <span className="block text-xs text-slate-500">
             {[testimonial.author_role, testimonial.company].filter(Boolean).join(", ")}
           </span>
+          {industry && <span className="mt-0.5 block text-xs font-medium text-brand-700">{industry}</span>}
         </span>
       </figcaption>
     </figure>
@@ -254,11 +255,12 @@ export function TestimonialCard({ testimonial }: { testimonial: Testimonial }) {
 export function PostCard({ post }: { post: BlogPost }) {
   return (
     <Link href={`/blog/${post.slug}`} className="card group flex flex-col overflow-hidden transition hover:shadow-lg">
-      <Cover src={post.cover_image_url} alt={post.title} label={post.tags[0] ?? "Insights"} />
+      <Cover src={post.cover_image_url} alt={post.title} label={post.category || post.tags[0] || "Insights"} />
       <div className="flex flex-1 flex-col p-6">
         <p className="text-xs text-slate-500">
+          {post.category && <span className="font-medium text-brand-700">{post.category} · </span>}
           {formatDate(post.published_at)}
-          {post.tags.length > 0 && <> · {post.tags.join(", ")}</>}
+          {post.author_name && <> · {post.author_name}</>}
         </p>
         <h3 className="mt-2 font-semibold text-slate-900 group-hover:text-brand-700">{post.title}</h3>
         <p className="mt-2 flex-1 text-sm text-slate-600">{post.excerpt}</p>

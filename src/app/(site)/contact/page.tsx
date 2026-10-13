@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Clock, Mail, MapPin, Phone } from "lucide-react";
+import { CalendarCheck, Clock, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { CallbackForm, LeadForm } from "@/components/site/lead-form";
 import { PageHero } from "@/components/site/ui";
 import { getSettings } from "@/lib/content";
@@ -21,6 +21,12 @@ export default async function ContactPage() {
       label: "Phone",
       value: company.phone,
       href: `tel:${company.phone.replace(/[^\d+]/g, "")}`,
+    },
+    company.whatsapp?.replace(/\D/g, "") && {
+      icon: MessageCircle,
+      label: "WhatsApp",
+      value: company.whatsapp,
+      href: `https://wa.me/${company.whatsapp.replace(/\D/g, "")}`,
     },
     company.address && { icon: MapPin, label: "Office", value: company.address },
     company.hours && { icon: Clock, label: "Hours", value: company.hours },
@@ -60,6 +66,15 @@ export default async function ContactPage() {
             <h2 className="font-semibold">Prefer a call?</h2>
             <p className="mt-1 mb-4 text-sm text-slate-600">Leave your number and we&apos;ll call you back during business hours.</p>
             <CallbackForm />
+          </div>
+          <div className="card p-6">
+            <h2 className="flex items-center gap-2 font-semibold">
+              <CalendarCheck className="size-5 text-brand-600" /> Book a consultation
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">Choose a day and time for a free session with a specialist.</p>
+            <Link href="/book-consultation" className="btn-secondary mt-4">
+              Pick a time
+            </Link>
           </div>
           <div className="card bg-ink p-6 text-white">
             <h2 className="font-semibold">Need a detailed estimate?</h2>

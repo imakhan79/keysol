@@ -19,6 +19,8 @@ export type FieldKind =
   | "datetime"
   | "metrics"
   | "ref"
+  /** Several image URLs, stored as an array. */
+  | "images"
   /** Multiple services, stored as an ordered array of slugs. */
   | "serviceSlugs";
 
@@ -29,7 +31,7 @@ export type FieldDef = {
   required?: boolean;
   help?: string;
   options?: { value: string; label: string }[];
-  ref?: "services" | "industries";
+  ref?: "services" | "industries" | "testimonials";
   /** Layout hint: half-width on large screens. */
   half?: boolean;
 };
@@ -193,9 +195,19 @@ export const contentTypes: Record<string, ContentType> = {
         kind: "metrics",
         help: "One per line as  Label | Value  — e.g.  Online revenue | +180%",
       },
+      { name: "technologies", label: "Technologies", kind: "tags", help: "One per line." },
       { name: "challenge", label: "The challenge", kind: "markdown" },
       { name: "solution", label: "Our solution", kind: "markdown" },
+      { name: "implementation", label: "Implementation", kind: "markdown", help: "How the project was delivered: phases, timeline, team." },
       { name: "results", label: "The results", kind: "markdown" },
+      { name: "screenshots", label: "Screenshots", kind: "images", help: "One image URL per line, or upload." },
+      {
+        name: "testimonial_id",
+        label: "Client testimonial",
+        kind: "ref",
+        ref: "testimonials",
+        help: "Optional. Shown on the case study page.",
+      },
       { name: "is_featured", label: "Feature on homepage", kind: "boolean", half: true },
       { name: "is_published", label: "Published", kind: "boolean", half: true },
       ...seoFields,
@@ -227,13 +239,13 @@ export const contentTypes: Record<string, ContentType> = {
       { name: "quote", label: "Quote", kind: "textarea", required: true },
       { name: "avatar_url", label: "Photo", kind: "image" },
       { name: "service_id", label: "Related service", kind: "ref", ref: "services", half: true },
+      { name: "industry_id", label: "Industry", kind: "ref", ref: "industries", half: true },
       { name: "sort_order", label: "Sort order", kind: "number", half: true },
       { name: "is_featured", label: "Feature on homepage", kind: "boolean", half: true },
       {
         name: "is_published",
         label: "Published",
         kind: "boolean",
-        half: true,
         help: "Only publish quotes the client has approved.",
       },
     ],
@@ -247,6 +259,7 @@ export const contentTypes: Record<string, ContentType> = {
     permission: "marketingContent",
     orderBy: { column: "published_at", ascending: false },
     columns: [
+      { name: "category", label: "Category" },
       { name: "author_name", label: "Author" },
       { name: "published_at", label: "Date" },
     ],
@@ -256,6 +269,13 @@ export const contentTypes: Record<string, ContentType> = {
       slugField,
       { name: "author_name", label: "Author", kind: "text", half: true },
       { name: "published_at", label: "Publish date", kind: "datetime", half: true },
+      {
+        name: "category",
+        label: "Category",
+        kind: "text",
+        half: true,
+        help: "e.g. Software Solutions, Digital Marketing. Readers can filter by category.",
+      },
       { name: "excerpt", label: "Excerpt", kind: "textarea" },
       { name: "cover_image_url", label: "Cover image", kind: "image" },
       { name: "tags", label: "Tags", kind: "tags", help: "One per line." },

@@ -34,6 +34,7 @@ export const leadTypes: { value: LeadType; label: string }[] = [
   { value: "quote", label: "Quote request" },
   { value: "contact", label: "Contact" },
   { value: "enquiry", label: "Service enquiry" },
+  { value: "consultation", label: "Consultation" },
   { value: "callback", label: "Callback" },
   { value: "newsletter", label: "Newsletter" },
 ];

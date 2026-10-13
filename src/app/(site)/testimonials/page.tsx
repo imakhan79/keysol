@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CtaBanner, EmptyState, PageHero, TestimonialCard } from "@/components/site/ui";
-import { getTestimonials } from "@/lib/content";
+import { getIndustries, getTestimonials } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -10,7 +10,8 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function TestimonialsPage() {
-  const testimonials = await getTestimonials();
+  const [testimonials, industries] = await Promise.all([getTestimonials(), getIndustries()]);
+  const industryName = (id: string | null) => industries.find((i) => i.id === id)?.name;
   return (
     <>
       <PageHero
@@ -29,7 +30,7 @@ export default async function TestimonialsPage() {
           <div className="columns-1 gap-5 space-y-5 md:columns-2 lg:columns-3">
             {testimonials.map((t) => (
               <div key={t.id} className="break-inside-avoid">
-                <TestimonialCard testimonial={t} />
+                <TestimonialCard testimonial={t} industry={industryName(t.industry_id)} />
               </div>
             ))}
           </div>

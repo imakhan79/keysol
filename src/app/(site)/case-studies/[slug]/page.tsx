@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Markdown } from "@/components/markdown";
-import { CtaBanner, DetailSkeleton, PageHero } from "@/components/site/ui";
-import { getCaseStudy, getIndustries, getServices, getSlugs } from "@/lib/content";
+import { CtaBanner, DetailSkeleton, PageHero, TestimonialCard } from "@/components/site/ui";
+import { getCaseStudy, getIndustries, getServices, getSlugs, getTestimonials } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {
@@ -34,13 +34,17 @@ export default function CaseStudyPage(props: PageProps<"/case-studies/[slug]">) 
 async function CaseStudyDetail({ params }: Pick<PageProps<"/case-studies/[slug]">, "params">) {
   const study = await getCaseStudy((await params).slug);
   if (!study) notFound();
-  const [services, industries] = await Promise.all([getServices(), getIndustries()]);
+  const [services, industries, testimonials] = await Promise.all([getServices(), getIndustries(), getTestimonials()]);
   const service = services.find((s) => s.id === study.service_id);
   const industry = industries.find((i) => i.id === study.industry_id);
+  const testimonial = testimonials.find((t) => t.id === study.testimonial_id);
+  const technologies = study.technologies ?? [];
+  const screenshots = study.screenshots ?? [];
 
   const sections = [
     { title: "The challenge", body: study.challenge },
     { title: "Our solution", body: study.solution },
+    { title: "Implementation", body: study.implementation ?? "" },
     { title: "The results", body: study.results },
   ].filter((s) => s.body.trim());
 
@@ -79,8 +83,38 @@ async function CaseStudyDetail({ params }: Pick<PageProps<"/case-studies/[slug]"
               <Markdown>{s.body}</Markdown>
             </section>
           ))}
+          {screenshots.length > 0 && (
+            <section>
+              <h2 className="mb-4 text-2xl font-semibold tracking-tight">Screenshots</h2>
+              <div className="grid gap-4 sm:grid-cols-2">
+                {screenshots.map((src, i) => (
+                  <a key={src} href={src} target="_blank" rel="noopener noreferrer" className="block">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- CMS images come from arbitrary hosts */}
+                    <img
+                      src={src}
+                      alt={`${study.title} screenshot ${i + 1}`}
+                      loading="lazy"
+                      className="aspect-video w-full rounded-xl border border-slate-200 object-cover transition hover:shadow-md"
+                    />
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+          {testimonial && (
+            <section>
+              <h2 className="mb-4 text-2xl font-semibold tracking-tight">What the client says</h2>
+              <TestimonialCard testimonial={testimonial} />
+            </section>
+          )}
         </div>
         <aside className="card h-fit space-y-4 p-6 text-sm lg:sticky lg:top-24">
+          {study.client_name && (
+            <p>
+              <span className="block text-slate-500">Client</span>
+              <span className="font-medium">{study.client_name}</span>
+            </p>
+          )}
           {service && (
             <p>
               <span className="block text-slate-500">Service</span>
@@ -96,6 +130,18 @@ async function CaseStudyDetail({ params }: Pick<PageProps<"/case-studies/[slug]"
                 {industry.name}
               </Link>
             </p>
+          )}
+          {technologies.length > 0 && (
+            <div>
+              <span className="block text-slate-500">Technology</span>
+              <ul className="mt-1.5 flex flex-wrap gap-1.5">
+                {technologies.map((t) => (
+                  <li key={t} className="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           <Link href="/quote" className="btn-primary w-full">
             Start a similar project

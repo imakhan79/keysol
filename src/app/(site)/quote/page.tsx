@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { CheckCircle2 } from "lucide-react";
 import { LeadForm } from "@/components/site/lead-form";
 import { PageHero } from "@/components/site/ui";
-import { getServices, getSettings } from "@/lib/content";
+import { getIndustries, getServices, getSettings } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export const metadata: Metadata = pageMetadata({
@@ -49,7 +49,12 @@ export default function QuotePage(props: PageProps<"/quote">) {
 }
 
 async function QuoteForm({ searchParams }: Pick<PageProps<"/quote">, "searchParams">) {
-  const [{ service }, services, { quote_options }] = await Promise.all([searchParams, getServices(), getSettings()]);
+  const [{ service }, services, industries, { quote_options }] = await Promise.all([
+    searchParams,
+    getServices(),
+    getIndustries(),
+    getSettings(),
+  ]);
   const options = services.filter((s) => !s.parent_id).map((s) => ({ value: s.slug, label: s.title }));
   return (
     <LeadForm
@@ -59,6 +64,7 @@ async function QuoteForm({ searchParams }: Pick<PageProps<"/quote">, "searchPara
       timelines={quote_options.timelines}
       organizationTypes={quote_options.organization_types ?? []}
       companySizes={quote_options.company_sizes ?? []}
+      industries={[...industries.map((i) => i.name), "Other"]}
       preselected={preselectedSlug(service, services)}
     />
   );

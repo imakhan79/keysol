@@ -53,6 +53,7 @@ function parseField(field: FieldDef, formData: FormData): unknown {
     case "serviceSlugs":
       return formData.getAll(field.name).filter((v): v is string => typeof v === "string" && v !== "");
     case "tags":
+    case "images":
       return text
         .split(/\r?\n/)
         .map((t) => t.trim())

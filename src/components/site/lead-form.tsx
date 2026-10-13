@@ -1,13 +1,13 @@
 "use client";
 
-import { useActionState, useEffect, useId, useRef } from "react";
+import { useActionState, useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { submitLead, type LeadFormState } from "@/app/actions/leads";
 import { trackConversion } from "@/components/analytics";
 
 type Option = { value: string; label: string };
-type LeadType = "contact" | "quote" | "enquiry" | "callback" | "newsletter";
+type LeadType = "contact" | "quote" | "enquiry" | "callback" | "newsletter" | "consultation";
 
 /** Shared submit logic: attribution, spam timing and conversion tracking. */
 function useLeadSubmit(type: LeadType) {
@@ -89,6 +89,7 @@ export function LeadForm({
   timelines = [],
   organizationTypes = [],
   companySizes = [],
+  industries = [],
   preselected,
   serviceSlug,
   compact = false,
@@ -99,6 +100,7 @@ export function LeadForm({
   timelines?: string[];
   organizationTypes?: string[];
   companySizes?: string[];
+  industries?: string[];
   preselected?: string;
   /** For service-page enquiries: records which service the visitor asked about. */
   serviceSlug?: string;
@@ -176,7 +178,10 @@ export function LeadForm({
       )}
 
       {type === "quote" && (
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className={`grid gap-5 ${industries.length > 0 ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+          {industries.length > 0 && (
+            <Select id={id} label="Industry" name="industry" options={industries} defaultValue={values.industry} />
+          )}
           <Select id={id} label="Estimated budget" name="budget_range" options={budgets} defaultValue={values.budget_range} />
           <Select id={id} label="Timeline" name="timeline" options={timelines} defaultValue={values.timeline} />
         </div>
@@ -211,6 +216,109 @@ export function LeadForm({
         <button type="submit" disabled={pending} className={`btn-primary px-6 ${compact ? "w-full" : ""}`}>
           {pending && <Loader2 className="size-4 animate-spin" />}
           {type === "quote" ? "Request my quote" : type === "enquiry" ? "Send enquiry" : "Send message"}
+        </button>
+      </div>
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Consultation booking
+// ---------------------------------------------------------------------------
+
+const timeSlots = ["Morning (9am–12pm)", "Afternoon (12pm–3pm)", "Late afternoon (3pm–6pm)"];
+const meetingTypes = ["Video call", "Phone call", "In person"];
+
+export function ConsultationForm({ services = [], preselected }: { services?: Option[]; preselected?: string }) {
+  const { state, submit, pending, err, values } = useLeadSubmit("consultation");
+  const id = useId();
+  // Visitor's local "today", so the picker never offers past dates.
+  const [today] = useState(() => {
+    const d = new Date();
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
+  });
+
+  if (state.status === "success") {
+    return (
+      <div className="card flex flex-col items-center px-6 py-14 text-center" role="status">
+        <CheckCircle2 className="size-12 text-emerald-500" />
+        <h2 className="mt-4 text-xl font-semibold">Consultation requested</h2>
+        <p className="mt-2 max-w-md text-slate-600">{state.message}</p>
+        <Link href="/services" className="btn-secondary mt-6">
+          Keep exploring
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <form action={submit} className="card space-y-5 p-6 sm:p-8" noValidate>
+      <Honeypot />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field id={id} label="Full name" name="name" defaultValue={values.name} error={err.name} required autoComplete="name" />
+        <Field id={id} label="Work email" name="email" type="email" defaultValue={values.email} error={err.email} required autoComplete="email" />
+        <Field id={id} label="Phone" name="phone" type="tel" defaultValue={values.phone} error={err.phone} autoComplete="tel" />
+        <Field id={id} label="Company" name="company" defaultValue={values.company} error={err.company} autoComplete="organization" />
+      </div>
+
+      {services.length > 0 && (
+        <div>
+          <label htmlFor={`${id}-services`} className="field-label">
+            Topic
+          </label>
+          <select id={`${id}-services`} name="services" className="field" defaultValue={values.services?.[0] ?? preselected ?? ""}>
+            <option value="">General consultation</option>
+            {services.map((s) => (
+              <option key={s.value} value={s.value}>
+                {s.label}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      <div className="grid gap-5 sm:grid-cols-3">
+        <div>
+          <label htmlFor={`${id}-preferred_date`} className="field-label">
+            Preferred date <span className="text-red-600">*</span>
+          </label>
+          <input
+            id={`${id}-preferred_date`}
+            name="preferred_date"
+            type="date"
+            min={today}
+            required
+            defaultValue={values.preferred_date ?? ""}
+            aria-invalid={Boolean(err.preferred_date)}
+            className={`field ${err.preferred_date ? "border-red-400" : ""}`}
+          />
+          {err.preferred_date && <p className="mt-1.5 text-sm text-red-600">{err.preferred_date}</p>}
+        </div>
+        <Select id={id} label="Preferred time" name="preferred_time" options={timeSlots} defaultValue={values.preferred_time} />
+        <Select id={id} label="Meeting type" name="meeting_type" options={meetingTypes} defaultValue={values.meeting_type} />
+      </div>
+
+      <div>
+        <label htmlFor={`${id}-message`} className="field-label">
+          What would you like to discuss?
+        </label>
+        <textarea
+          id={`${id}-message`}
+          name="message"
+          rows={4}
+          maxLength={5000}
+          defaultValue={values.message ?? ""}
+          className="field"
+          placeholder="Your goals, current challenges or questions for our specialists"
+        />
+      </div>
+
+      <FormError state={state} />
+
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <PrivacyNote />
+        <button type="submit" disabled={pending} className="btn-primary px-6">
+          {pending && <Loader2 className="size-4 animate-spin" />} Book consultation
         </button>
       </div>
     </form>

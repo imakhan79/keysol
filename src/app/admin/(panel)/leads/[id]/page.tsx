@@ -4,9 +4,10 @@ import type { Metadata } from "next";
 import { ArrowLeft, Mail, Phone } from "lucide-react";
 import { can, requireStaff } from "@/lib/auth";
 import { roleLabels, type StaffRole } from "@/lib/roles";
+import { formatDate } from "@/lib/site";
 import { createSessionClient } from "@/lib/supabase/server";
 import type { Lead, LeadNote } from "@/lib/types";
-import { AdminHeader, formatDateTime, StatusBadge } from "../../ui";
+import { AdminHeader, formatDateTime, leadTypes, StatusBadge } from "../../ui";
 import { DeleteLeadButton, DeleteNoteButton, LeadUpdateForm, NoteForm } from "./forms";
 
 export const metadata: Metadata = { title: "Lead" };
@@ -32,6 +33,11 @@ export default async function LeadPage(props: PageProps<"/admin/leads/[id]">) {
     ["Company", lead.company],
     ["Organisation type", lead.organization_type],
     ["Company size", lead.company_size],
+    ["Industry", lead.industry],
+    [
+      "Preferred consultation",
+      lead.preferred_date && [formatDate(lead.preferred_date), lead.preferred_time, lead.meeting_type].filter(Boolean).join(" · "),
+    ],
     ["Services", lead.services.join(", ")],
     ["Budget", lead.budget_range],
     ["Timeline", lead.timeline],
@@ -46,7 +52,7 @@ export default async function LeadPage(props: PageProps<"/admin/leads/[id]">) {
     <>
       <AdminHeader
         title={lead.name}
-        description={`${lead.type === "quote" ? "Quote request" : "Contact enquiry"} · ${lead.email}`}
+        description={`${leadTypes.find((t) => t.value === lead.type)?.label ?? "Lead"} · ${lead.email}`}
         actions={
           <>
             <Link href="/admin/leads" className="btn-secondary">

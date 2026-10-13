@@ -68,10 +68,14 @@ export type CaseStudy = Seo &
     challenge: string;
     solution: string;
     results: string;
+    implementation: string;
     metrics: Metric[];
+    technologies: string[];
+    screenshots: string[];
     cover_image_url: string | null;
     service_id: string | null;
     industry_id: string | null;
+    testimonial_id: string | null;
     is_featured: boolean;
     is_published: boolean;
     published_at: string | null;
@@ -86,6 +90,7 @@ export type Testimonial = Timestamps & {
   rating: number | null;
   avatar_url: string | null;
   service_id: string | null;
+  industry_id: string | null;
   sort_order: number;
   is_featured: boolean;
   is_published: boolean;
@@ -100,6 +105,7 @@ export type BlogPost = Seo &
     body: string;
     cover_image_url: string | null;
     author_name: string;
+    category: string;
     tags: string[];
     is_published: boolean;
     published_at: string | null;
@@ -114,7 +120,7 @@ export type Page = Seo &
     is_published: boolean;
   };
 
-export type LeadType = "contact" | "quote" | "callback" | "newsletter" | "enquiry";
+export type LeadType = "contact" | "quote" | "callback" | "newsletter" | "enquiry" | "consultation";
 export type LeadStatus = "new" | "contacted" | "qualified" | "proposal" | "won" | "lost" | "spam";
 
 export type Lead = {
@@ -131,6 +137,10 @@ export type Lead = {
   timeline: string | null;
   organization_type: string | null;
   company_size: string | null;
+  industry: string | null;
+  preferred_date: string | null;
+  preferred_time: string | null;
+  meeting_type: string | null;
   source_page: string | null;
   utm_source: string | null;
   utm_medium: string | null;

@@ -1,7 +1,7 @@
-import { MessageCircle, Phone } from "lucide-react";
+import { Mail, MessageCircle, Phone } from "lucide-react";
 import { getSettings } from "@/lib/content";
 
-/** Floating call / WhatsApp shortcuts, shown only for channels configured in Admin → Settings. */
+/** Floating WhatsApp / call / email shortcuts, shown only for channels configured in Admin → Settings. */
 export async function ContactDock() {
   const { company } = await getSettings();
   const phone = company.phone?.replace(/[^\d+]/g, "");
@@ -9,7 +9,9 @@ export async function ContactDock() {
   // Skip placeholder numbers such as "+00 000 000 0000".
   const phoneDigits = phone?.replace(/\D/g, "") ?? "";
   const callable = phoneDigits.length >= 7 && /[1-9]/.test(phoneDigits);
-  if (!whatsapp && !callable) return null;
+  // Skip placeholder addresses such as hello@company.example.
+  const email = company.email && !company.email.endsWith(".example") ? company.email : "";
+  if (!whatsapp && !callable && !email) return null;
 
   return (
     <div className="fixed right-4 bottom-4 z-30 flex flex-col gap-3 sm:right-6 sm:bottom-6">
@@ -31,6 +33,15 @@ export async function ContactDock() {
           className="grid size-12 place-items-center rounded-full bg-brand-600 text-white shadow-lg shadow-brand-900/20 transition hover:scale-105 sm:hidden"
         >
           <Phone className="size-5" />
+        </a>
+      )}
+      {email && (
+        <a
+          href={`mailto:${email}`}
+          aria-label="Email us"
+          className="grid size-12 place-items-center rounded-full bg-ink text-white shadow-lg shadow-slate-900/20 transition hover:scale-105"
+        >
+          <Mail className="size-5" />
         </a>
       )}
     </div>

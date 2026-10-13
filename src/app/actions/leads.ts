@@ -15,7 +15,11 @@ type FormValues = Partial<
     | "budget_range"
     | "timeline"
     | "organization_type"
-    | "company_size",
+    | "company_size"
+    | "industry"
+    | "preferred_date"
+    | "preferred_time"
+    | "meeting_type",
     string
   >
 > & { services?: string[] };
@@ -39,7 +43,7 @@ const optional = (max: number) =>
 // One schema for every capture channel; per-channel requirements are in superRefine.
 const schema = z
   .object({
-    type: z.enum(["contact", "quote", "callback", "newsletter", "enquiry"]),
+    type: z.enum(["contact", "quote", "callback", "newsletter", "enquiry", "consultation"]),
     name: z.string().trim().max(120).default(""),
     email: z.string().trim().toLowerCase().max(254).email("Please enter a valid email address"),
     phone: optional(40),
@@ -50,6 +54,15 @@ const schema = z
     timeline: optional(60),
     organization_type: optional(80),
     company_size: optional(40),
+    industry: optional(120),
+    preferred_date: z
+      .string()
+      .trim()
+      .regex(/^(\d{4}-\d{2}-\d{2})?$/, "Please choose a valid date")
+      .transform((v) => v || null)
+      .nullish(),
+    preferred_time: optional(40),
+    meeting_type: optional(40),
     source_page: optional(300),
     utm_source: optional(120),
     utm_medium: optional(120),
@@ -69,6 +82,15 @@ const schema = z
     if (lead.type === "callback" && (lead.phone ?? "").replace(/\D/g, "").length < 7) {
       ctx.addIssue({ code: "custom", path: ["phone"], message: "Please enter a phone number we can call" });
     }
+    if (lead.type === "consultation") {
+      // Compare calendar dates as strings; allow "today" in any visitor time zone.
+      const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+      if (!lead.preferred_date) {
+        ctx.addIssue({ code: "custom", path: ["preferred_date"], message: "Please choose a preferred date" });
+      } else if (lead.preferred_date < yesterday) {
+        ctx.addIssue({ code: "custom", path: ["preferred_date"], message: "Please choose a date in the future" });
+      }
+    }
   });
 
 type Lead = z.infer<typeof schema>;
@@ -79,6 +101,7 @@ const successMessages: Record<Lead["type"], string> = {
   enquiry: "Thanks! A specialist will reply within one business day.",
   callback: "Thanks! We'll call you back during business hours.",
   newsletter: "You're subscribed. Thanks for joining!",
+  consultation: "Thanks! We'll confirm your consultation time by email within one business day.",
 };
 
 // Best-effort throttle per IP. Per server instance only; put a WAF / edge rate limit
@@ -122,6 +145,10 @@ export async function submitLead(_prev: LeadFormState, formData: FormData): Prom
     timeline: raw.timeline,
     organization_type: raw.organization_type,
     company_size: raw.company_size,
+    industry: raw.industry,
+    preferred_date: raw.preferred_date,
+    preferred_time: raw.preferred_time,
+    meeting_type: raw.meeting_type,
     services: raw.services,
   };
 
@@ -157,6 +184,7 @@ const typeLabels: Record<Lead["type"], string> = {
   enquiry: "service enquiry",
   callback: "callback request",
   newsletter: "newsletter sign-up",
+  consultation: "consultation booking",
 };
 
 async function notifyWebhook(lead: Lead) {
@@ -167,8 +195,12 @@ async function notifyWebhook(lead: Lead) {
     lead.phone && `Phone: ${lead.phone}`,
     lead.company && `Company: ${lead.company}`,
     lead.organization_type && `Organisation: ${lead.organization_type}${lead.company_size ? ` (${lead.company_size})` : ""}`,
+    lead.industry && `Industry: ${lead.industry}`,
+    lead.preferred_date &&
+      `Preferred: ${[lead.preferred_date, lead.preferred_time, lead.meeting_type].filter(Boolean).join(" · ")}`,
     lead.services.length > 0 && `Services: ${lead.services.join(", ")}`,
     lead.budget_range && `Budget: ${lead.budget_range}`,
+    lead.timeline && `Timeline: ${lead.timeline}`,
     lead.message && `> ${lead.message.slice(0, 500)}`,
   ].filter(Boolean);
   try {

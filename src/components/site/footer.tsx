@@ -97,6 +97,9 @@ export async function SiteFooter() {
             <Link href="/quote" className="btn-primary">
               Request a quote
             </Link>
+            <Link href="/book-consultation" className="btn-ghost-light">
+              Book a consultation
+            </Link>
             <Link href="/contact#callback" className="btn-ghost-light">
               Request a callback
             </Link>
