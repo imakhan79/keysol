@@ -99,6 +99,7 @@ async function BlogListing({ searchParams }: Pick<PageProps<"/blog">, "searchPar
           />
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
+            <h2 className="sr-only">Articles</h2>
             {results.map((post) => (
               <PostCard key={post.id} post={post} category={categoryName(post.category_id)} />
             ))}
@@ -122,7 +123,7 @@ async function BlogListing({ searchParams }: Pick<PageProps<"/blog">, "searchPar
         </form>
         {categories.length > 0 && (
           <nav aria-label="Blog categories">
-            <h2 className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Categories</h2>
+            <h2 className="text-xs font-semibold tracking-wider text-slate-500 uppercase">Categories</h2>
             <ul className="mt-3 space-y-1 text-sm">
               {categories.map((c) => (
                 <li key={c.id}>
@@ -141,7 +142,7 @@ async function BlogListing({ searchParams }: Pick<PageProps<"/blog">, "searchPar
         )}
         {tags.length > 0 && (
           <nav aria-label="Blog tags">
-            <h2 className="text-xs font-semibold tracking-wider text-slate-400 uppercase">Tags</h2>
+            <h2 className="text-xs font-semibold tracking-wider text-slate-500 uppercase">Tags</h2>
             <ul className="mt-3 flex flex-wrap gap-1.5 text-sm">
               {tags.map((t) => (
                 <li key={t}>
