@@ -12,6 +12,10 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
+  images: {
+    // Admin uploads (Supabase Storage public bucket); see components/cms-image.tsx.
+    remotePatterns: [{ protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" }],
+  },
   async redirects() {
     return [{ source: "/services/bulk-sms", destination: "/services/sms-solutions", permanent: true }];
   },

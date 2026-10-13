@@ -244,7 +244,18 @@ export async function saveSettings(_prev: FormState, formData: FormData): Promis
 // ---------------------------------------------------------------------------
 
 const leadUpdate = z.object({
-  status: z.enum(["new", "contacted", "qualified", "proposal", "won", "lost", "spam"]),
+  status: z.enum([
+    "new",
+    "contacted",
+    "qualified",
+    "consultation",
+    "proposal",
+    "negotiation",
+    "won",
+    "onboarding",
+    "lost",
+    "spam",
+  ]),
   estimated_value: z
     .string()
     .trim()

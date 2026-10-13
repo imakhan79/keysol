@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Share2 } from "lucide-react";
+import { CmsImage } from "@/components/cms-image";
 import { JsonLd } from "@/components/json-ld";
 import { Markdown } from "@/components/markdown";
 import { CtaBanner, DetailSkeleton, PageHero, PostCard } from "@/components/site/ui";
@@ -83,8 +84,13 @@ async function PostDetail({ params }: Pick<PageProps<"/blog/[slug]">, "params">)
       </PageHero>
       <article className="container-page max-w-3xl py-16">
         {post.cover_image_url && (
-          // eslint-disable-next-line @next/next/no-img-element -- CMS images come from arbitrary hosts
-          <img src={post.cover_image_url} alt="" className="mb-10 w-full rounded-2xl border border-slate-200" />
+          <CmsImage
+            src={post.cover_image_url}
+            alt=""
+            sizes="(min-width: 768px) 768px, 100vw"
+            eager
+            className="mb-10 h-auto w-full rounded-2xl border border-slate-200"
+          />
         )}
         <Markdown className="prose-lg">{post.body}</Markdown>
         <div className="mt-10 flex flex-col gap-6 border-t border-slate-200 pt-6 sm:flex-row sm:items-center sm:justify-between">

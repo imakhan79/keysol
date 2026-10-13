@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { Reveal } from "@/components/motion";
 import { ArrowRight, ChevronRight, Quote, Star } from "lucide-react";
 import { Icon } from "@/components/icon";
-import { formatDate } from "@/lib/site";
+import { CmsImage } from "@/components/cms-image";
+import { JsonLd } from "@/components/json-ld";
+import { formatDate, siteUrl } from "@/lib/site";
 import type { BlogPost, CaseStudy, Industry, PortfolioProject, Service, Solution, Testimonial } from "@/lib/types";
 
 export function PageHero({
@@ -20,12 +23,14 @@ export function PageHero({
   return (
     <section className="relative overflow-hidden bg-ink text-white">
       <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black,transparent_70%)]" />
-      <div className="absolute -top-40 left-1/2 h-80 w-[48rem] -translate-x-1/2 rounded-full bg-brand-600/30 blur-3xl" />
+      <div className="absolute -top-40 left-1/2 h-80 w-[48rem] -translate-x-1/2 rounded-full bg-brand-500/20 blur-3xl" />
       <div className="container-page relative py-16 sm:py-20">
         {crumbs && <Breadcrumbs crumbs={crumbs} />}
         {eyebrow && <p className="mb-3 text-xs font-semibold tracking-[0.18em] text-accent uppercase">{eyebrow}</p>}
-        <h1 className="max-w-3xl text-3xl font-semibold tracking-tight text-balance sm:text-5xl">{title}</h1>
-        {description && <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-300">{description}</p>}
+        <h1 className="max-w-3xl animate-rise text-3xl font-bold tracking-tight text-balance sm:text-5xl">{title}</h1>
+        {description && (
+          <p className="mt-5 max-w-2xl animate-rise text-lg leading-relaxed text-slate-300 [animation-delay:120ms]">{description}</p>
+        )}
         {children}
       </div>
     </section>
@@ -33,8 +38,21 @@ export function PageHero({
 }
 
 function Breadcrumbs({ crumbs }: { crumbs: { href: string; label: string }[] }) {
+  const trail = [{ href: "/", label: "Home" }, ...crumbs];
   return (
     <nav aria-label="Breadcrumb" className="mb-6">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: trail.map((c, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: c.label,
+            item: `${siteUrl}${c.href === "/" ? "" : c.href}`,
+          })),
+        }}
+      />
       <ol className="flex flex-wrap items-center gap-1 text-sm text-slate-400">
         <li>
           <Link href="/" className="hover:text-white">
@@ -66,7 +84,7 @@ export function SectionHeading({
   action?: { href: string; label: string };
 }) {
   return (
-    <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <Reveal className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
       <div className="max-w-2xl">
         {eyebrow && <p className="eyebrow mb-2">{eyebrow}</p>}
         <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl">{title}</h2>
@@ -78,7 +96,7 @@ export function SectionHeading({
           <ArrowRight className="size-4 transition group-hover:translate-x-0.5" />
         </Link>
       )}
-    </div>
+    </Reveal>
   );
 }
 
@@ -91,15 +109,17 @@ export function CtaBanner({
 }) {
   return (
     <section className="container-page py-16 sm:py-24">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-700 via-brand-600 to-brand-500 px-6 py-12 text-white sm:px-12 sm:py-16">
+      <div className="relative overflow-hidden rounded-3xl bg-ink px-6 py-12 text-white sm:px-12 sm:py-16">
         <div className="bg-grid absolute inset-0 opacity-60" />
+        <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-brand-500/30 blur-3xl" />
+        <div className="absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="max-w-2xl">
             <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>
-            <p className="mt-3 text-brand-100">{description}</p>
+            <p className="mt-3 text-slate-300">{description}</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/quote" className="btn bg-white text-brand-700 hover:bg-brand-50">
+            <Link href="/quote" className="btn-primary">
               Request a quote
             </Link>
             <Link href="/book-consultation" className="btn-ghost-light">
@@ -161,8 +181,14 @@ export function IndustryCard({ industry }: { industry: Industry }) {
 
 function Cover({ src, alt, label }: { src: string | null; alt: string; label: string }) {
   return src ? (
-    // eslint-disable-next-line @next/next/no-img-element -- CMS images come from arbitrary hosts
-    <img src={src} alt={alt} loading="lazy" className="aspect-[16/10] w-full object-cover" />
+    <CmsImage
+      src={src}
+      alt={alt}
+      width={800}
+      height={500}
+      sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+      className="aspect-[16/10] w-full object-cover"
+    />
   ) : (
     <div className="grid aspect-[16/10] w-full place-items-center bg-gradient-to-br from-ink to-brand-900 text-sm font-medium text-white/70">
       {label}

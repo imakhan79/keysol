@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import { CmsImage } from "@/components/cms-image";
 import { Markdown } from "@/components/markdown";
 import { CtaBanner, DetailSkeleton, PageHero, TestimonialCard } from "@/components/site/ui";
 import { getCaseStudy, getIndustries, getServices, getSlugs, getTestimonials } from "@/lib/content";
@@ -74,8 +75,13 @@ async function CaseStudyDetail({ params }: Pick<PageProps<"/case-studies/[slug]"
       <div className="container-page grid gap-12 py-16 lg:grid-cols-[1fr_300px]">
         <div className="space-y-12">
           {study.cover_image_url && (
-            // eslint-disable-next-line @next/next/no-img-element -- CMS images come from arbitrary hosts
-            <img src={study.cover_image_url} alt={study.title} className="w-full rounded-2xl border border-slate-200" />
+            <CmsImage
+              src={study.cover_image_url}
+              alt={study.title}
+              sizes="(min-width: 1024px) 900px, 100vw"
+              eager
+              className="h-auto w-full rounded-2xl border border-slate-200"
+            />
           )}
           {sections.map((s) => (
             <section key={s.title}>

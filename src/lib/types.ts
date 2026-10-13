@@ -121,7 +121,17 @@ export type Page = Seo &
   };
 
 export type LeadType = "contact" | "quote" | "callback" | "newsletter" | "enquiry" | "consultation";
-export type LeadStatus = "new" | "contacted" | "qualified" | "proposal" | "won" | "lost" | "spam";
+export type LeadStatus =
+  | "new"
+  | "contacted"
+  | "qualified"
+  | "consultation"
+  | "proposal"
+  | "negotiation"
+  | "won"
+  | "onboarding"
+  | "lost"
+  | "spam";
 
 export type Lead = {
   id: string;

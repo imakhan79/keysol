@@ -141,7 +141,7 @@ function MenuList({ items }: { items: NavLink[] }) {
 export function Logo({ name, light = false }: { name: string; light?: boolean }) {
   return (
     <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label={`${name} home`}>
-      <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-brand-500 to-accent text-sm font-bold text-white shadow-sm">
+      <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-brand-400 to-accent text-sm font-extrabold text-ink shadow-sm">
         {name.slice(0, 1)}
       </span>
       <span className={`text-lg font-semibold tracking-tight ${light ? "text-white" : "text-slate-900"}`}>{name}</span>

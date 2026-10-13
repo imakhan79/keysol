@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Icon } from "@/components/icon";
+import { RevealGrid } from "@/components/motion";
 import { JsonLd } from "@/components/json-ld";
 import { FaqList } from "@/components/site/faq-list";
 import {
@@ -66,12 +67,18 @@ export default async function HomePage() {
       <JsonLd
         data={{
           "@context": "https://schema.org",
-          "@type": "Organization",
+          // ProfessionalService is a LocalBusiness subtype: eligible for local search features.
+          "@type": ["Organization", "ProfessionalService"],
+          "@id": `${siteUrl}/#organization`,
           name: company.name,
           url: siteUrl,
+          logo: `${siteUrl}/opengraph-image`,
+          image: `${siteUrl}/opengraph-image`,
           description: company.description,
           email: company.email || undefined,
           telephone: company.phone || undefined,
+          address: company.address ? { "@type": "PostalAddress", streetAddress: company.address } : undefined,
+          openingHours: company.hours || undefined,
           sameAs: Object.values(social).filter(Boolean),
         }}
       />
@@ -79,7 +86,7 @@ export default async function HomePage() {
       {/* Hero: what we do, who for, why us */}
       <section className="relative overflow-hidden bg-ink text-white">
         <div className="bg-grid absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black,transparent_75%)]" />
-        <div className="absolute -top-48 left-1/2 h-[28rem] w-[60rem] -translate-x-1/2 rounded-full bg-brand-600/35 blur-3xl" />
+        <div className="absolute -top-48 left-1/2 h-[28rem] w-[60rem] -translate-x-1/2 rounded-full bg-brand-500/25 blur-3xl" />
         <div className="absolute right-0 bottom-0 h-64 w-64 rounded-full bg-accent/20 blur-3xl" />
         <div className="container-page relative grid gap-12 py-20 sm:py-24 lg:grid-cols-[1.2fr_1fr] lg:items-center">
           <div>
@@ -89,9 +96,9 @@ export default async function HomePage() {
                 {home.audience_line}
               </p>
             )}
-            <h1 className="text-4xl font-semibold tracking-tight text-balance sm:text-6xl">{home.hero_title}</h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300">{home.hero_subtitle}</p>
-            <div className="mt-10 flex flex-wrap gap-3">
+            <h1 className="animate-rise text-4xl font-bold tracking-tight text-balance sm:text-6xl">{home.hero_title}</h1>
+            <p className="mt-6 max-w-xl animate-rise text-lg leading-relaxed text-slate-300 [animation-delay:120ms]">{home.hero_subtitle}</p>
+            <div className="mt-10 flex animate-rise flex-wrap gap-3 [animation-delay:240ms]">
               <Link href="/quote" className="btn-primary px-6 py-3 text-base">
                 {home.primary_cta || "Request a quote"} <ArrowRight className="size-4" />
               </Link>
@@ -144,11 +151,11 @@ export default async function HomePage() {
             description="One partner for communication, software, commerce, marketing and infrastructure."
             action={{ href: "/services", label: `View all ${services.length} services` }}
           />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <RevealGrid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((service) => (
               <ServiceCard key={service.id} service={service} />
             ))}
-          </div>
+          </RevealGrid>
         </div>
       </section>
 
@@ -161,11 +168,11 @@ export default async function HomePage() {
             description="Whether you run the business, the IT estate, the marketing or a startup, we start from what you need."
             action={{ href: "/solutions", label: "All solutions" }}
           />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <RevealGrid className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {featuredSolutions.map((s) => (
               <SolutionCard key={s.id} solution={s} />
             ))}
-          </div>
+          </RevealGrid>
         </section>
       )}
 
@@ -174,11 +181,11 @@ export default async function HomePage() {
         <section className="border-y border-slate-100 bg-slate-50/60">
           <div className="container-page py-20 sm:py-24">
             <SectionHeading eyebrow="Industries" title="Solutions shaped for your sector" action={{ href: "/industries", label: "All industries" }} />
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <RevealGrid className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {industries.slice(0, 8).map((industry) => (
                 <IndustryCard key={industry.id} industry={industry} />
               ))}
-            </div>
+            </RevealGrid>
           </div>
         </section>
       )}
@@ -233,11 +240,11 @@ export default async function HomePage() {
       {featuredProjects.length > 0 && (
         <section className="container-page py-20 sm:py-24">
           <SectionHeading eyebrow="Portfolio" title="Recent projects" action={{ href: "/portfolio", label: "Full portfolio" }} />
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <RevealGrid className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {featuredProjects.map((project) => (
               <ProjectCard key={project.id} project={project} />
             ))}
-          </div>
+          </RevealGrid>
         </section>
       )}
 
@@ -246,11 +253,11 @@ export default async function HomePage() {
         <section className="bg-slate-50 py-20 sm:py-24">
           <div className="container-page">
             <SectionHeading eyebrow="Case studies" title="Results we are proud of" action={{ href: "/case-studies", label: "All case studies" }} />
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <RevealGrid className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {featuredStudies.map((study) => (
                 <CaseStudyCard key={study.id} study={study} />
               ))}
-            </div>
+            </RevealGrid>
           </div>
         </section>
       )}
@@ -259,11 +266,11 @@ export default async function HomePage() {
       {testimonials.length > 0 && (
         <section className="container-page py-20 sm:py-24">
           <SectionHeading eyebrow="Testimonials" title="What our clients say" action={{ href: "/testimonials", label: "All testimonials" }} />
-          <div className="grid gap-5 md:grid-cols-3">
+          <RevealGrid className="grid gap-5 md:grid-cols-3">
             {testimonials.slice(0, 3).map((t) => (
               <TestimonialCard key={t.id} testimonial={t} />
             ))}
-          </div>
+          </RevealGrid>
         </section>
       )}
 
@@ -292,11 +299,11 @@ export default async function HomePage() {
         <section className="border-t border-slate-100 bg-slate-50/60">
           <div className="container-page py-20 sm:py-24">
             <SectionHeading eyebrow="Insights" title="Latest from the blog" action={{ href: "/blog", label: "All articles" }} />
-            <div className="grid gap-6 md:grid-cols-3">
+            <RevealGrid className="grid gap-6 md:grid-cols-3">
               {posts.slice(0, 3).map((post) => (
                 <PostCard key={post.id} post={post} />
               ))}
-            </div>
+            </RevealGrid>
           </div>
         </section>
       )}

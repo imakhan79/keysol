@@ -24,8 +24,11 @@ export const leadStatuses: { value: LeadStatus; label: string; className: string
   { value: "new", label: "New", className: "bg-blue-50 text-blue-700 ring-blue-200" },
   { value: "contacted", label: "Contacted", className: "bg-violet-50 text-violet-700 ring-violet-200" },
   { value: "qualified", label: "Qualified", className: "bg-amber-50 text-amber-800 ring-amber-200" },
+  { value: "consultation", label: "Consultation", className: "bg-orange-50 text-orange-800 ring-orange-200" },
   { value: "proposal", label: "Proposal sent", className: "bg-cyan-50 text-cyan-800 ring-cyan-200" },
+  { value: "negotiation", label: "Negotiation", className: "bg-fuchsia-50 text-fuchsia-800 ring-fuchsia-200" },
   { value: "won", label: "Won", className: "bg-emerald-50 text-emerald-700 ring-emerald-200" },
+  { value: "onboarding", label: "Onboarding", className: "bg-teal-50 text-teal-800 ring-teal-200" },
   { value: "lost", label: "Lost", className: "bg-slate-100 text-slate-600 ring-slate-200" },
   { value: "spam", label: "Spam", className: "bg-red-50 text-red-700 ring-red-200" },
 ];
