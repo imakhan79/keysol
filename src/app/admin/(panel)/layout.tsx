@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { ExternalLink, LogOut } from "lucide-react";
+import { BrandMark } from "@/components/brand";
 import { getStaff } from "@/lib/auth";
 import { roleLabels } from "@/lib/roles";
 import { signOut } from "../actions";
@@ -12,9 +13,7 @@ export default function PanelLayout({ children }: LayoutProps<"/admin">) {
       <aside className="flex shrink-0 flex-col border-b border-slate-200 bg-ink text-slate-300 lg:sticky lg:top-0 lg:h-screen lg:w-60 lg:border-r lg:border-b-0">
         <div className="flex h-14 items-center justify-between px-4 lg:h-16">
           <Link href="/admin" className="flex items-center gap-2 font-semibold text-white">
-            <span className="grid size-7 place-items-center rounded-lg bg-gradient-to-br from-brand-500 to-accent text-xs">
-              D
-            </span>
+            <BrandMark light className="h-5 w-auto" />
             Admin
           </Link>
           <Link href="/" target="_blank" className="text-slate-400 hover:text-white" aria-label="Open website">

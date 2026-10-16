@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata, Viewport } from "next";
-import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Josefin_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import { Analytics } from "@/components/analytics";
 import { getSettings } from "@/lib/content";
 import { siteUrl } from "@/lib/site";
@@ -15,6 +15,13 @@ const jakarta = Plus_Jakarta_Sans({
   variable: "--font-jakarta",
   subsets: ["latin"],
   weight: ["500", "600", "700", "800"],
+});
+
+// Logo wordmark face.
+const josefin = Josefin_Sans({
+  variable: "--font-josefin",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -34,12 +41,12 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0b1220",
+  themeColor: "#0a1d31",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${jakarta.variable} h-full antialiased`}>
+    <html lang="en" className={`${inter.variable} ${jakarta.variable} ${josefin.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">
         {children}
         <Suspense fallback={null}>

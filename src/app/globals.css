@@ -4,23 +4,28 @@
 @theme inline {
   --font-sans: var(--font-inter);
   --font-display: var(--font-jakarta);
+  --font-wordmark: var(--font-josefin);
 }
 
 @theme {
-  --color-ink: #0b1220;
-  --color-ink-soft: #111a2e;
-  /* Electric teal. 600+ meet WCAG AA as text on white; 400–500 are for fills on navy. */
-  --color-brand-50: #effcfa;
-  --color-brand-100: #ccf7ef;
-  --color-brand-200: #99eee0;
-  --color-brand-300: #5fdcca;
-  --color-brand-400: #2dc8b4;
-  --color-brand-500: #14b8a6;
-  --color-brand-600: #0f766e;
-  --color-brand-700: #115e59;
-  --color-brand-800: #134e4a;
-  --color-brand-900: #0f3d3a;
-  --color-accent: #22d3ee;
+  /* Capitalink Technologies palette, sampled from the logo. */
+  --color-ink: #0a1d31;
+  --color-ink-soft: #10283f;
+  /* Logo wordmark navy. */
+  --color-navy: #2a5272;
+  /* Capitalink ocean blue. 500+ meet WCAG AA as text on white; 300–400 are for text/fills on navy. */
+  --color-brand-50: #eef6fb;
+  --color-brand-100: #d6eaf5;
+  --color-brand-200: #aed4ea;
+  --color-brand-300: #78b6d8;
+  --color-brand-400: #3f97c4;
+  --color-brand-500: #2079ad;
+  --color-brand-600: #155f93;
+  --color-brand-700: #114e7b;
+  --color-brand-800: #0f4066;
+  --color-brand-900: #0d3352;
+  /* Logo teal, used for highlights on dark backgrounds. */
+  --color-accent: #46b8b0;
 
   --animate-rise: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   @keyframes rise {
@@ -78,7 +83,7 @@ a.card {
 a.card:hover {
   transform: translateY(-3px);
   border-color: var(--color-brand-200);
-  box-shadow: 0 12px 32px -12px rgb(11 18 32 / 0.18);
+  box-shadow: 0 12px 32px -12px rgb(10 29 49 / 0.18);
 }
 
 /* Subtle grid used behind dark hero sections */
@@ -96,10 +101,10 @@ a.card:hover {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-60;
 }
 @utility btn-primary {
-  @apply btn bg-brand-500 text-ink shadow-[0_0_0_1px_rgb(20_184_166/0.4),0_8px_24px_-8px_rgb(20_184_166/0.6)] hover:-translate-y-px hover:bg-brand-400 hover:shadow-[0_0_0_1px_rgb(45_200_180/0.5),0_12px_32px_-8px_rgb(20_184_166/0.75)] active:translate-y-0;
+  @apply btn bg-brand-600 text-white shadow-[0_0_0_1px_rgb(32_121_173/0.45),0_8px_24px_-8px_rgb(21_95_147/0.6)] hover:-translate-y-px hover:bg-brand-500 hover:shadow-[0_0_0_1px_rgb(70_184_176/0.5),0_12px_32px_-8px_rgb(32_121_173/0.75)] active:translate-y-0;
 }
 @utility btn-secondary {
-  @apply btn border border-slate-300 bg-white text-slate-900 hover:border-brand-500 hover:text-brand-700;
+  @apply btn border border-slate-300 bg-white text-navy hover:border-brand-500 hover:text-brand-700;
 }
 @utility btn-ghost-light {
   @apply btn border border-white/20 bg-white/5 text-white hover:bg-white/10;

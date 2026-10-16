@@ -183,7 +183,7 @@ export async function saveSettings(_prev: FormState, formData: FormData): Promis
     {
       key: "company",
       value: {
-        name: get("company.name") || "Digitora Next",
+        name: get("company.name") || "Capitalink Technologies",
         tagline: get("company.tagline"),
         description: get("company.description"),
         email: get("company.email"),

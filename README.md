@@ -1,6 +1,6 @@
-# Digitora Next website
+# Capitalink Technologies website
 
-Corporate website and lead-generation platform for Digitora Next: digital communication & SMS, software / web / mobile
+Corporate website and lead-generation platform for Capitalink Technologies: digital communication & SMS, software / web / mobile
 development, CMS, CRM, ERP, e-commerce, digital marketing, SEO, social media, hosting, maintenance and support.
 
 **Stack:** Next.js 16 (App Router, Cache Components) · TypeScript · Tailwind CSS 4 · Motion · Supabase (Postgres, Auth,

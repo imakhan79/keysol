@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import { BrandLogo } from "@/components/brand";
 import { Icon } from "@/components/icon";
 import { getServiceCategories, getServices, getSettings, getSolutions } from "@/lib/content";
 import { companyNav, workNav, type NavLink } from "@/lib/site";
@@ -145,11 +146,8 @@ function MenuList({ items }: { items: NavLink[] }) {
 
 export function Logo({ name, light = false }: { name: string; light?: boolean }) {
   return (
-    <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label={`${name} home`}>
-      <span className="grid size-8 place-items-center rounded-lg bg-gradient-to-br from-brand-400 to-accent text-sm font-extrabold text-ink shadow-sm">
-        {name.slice(0, 1)}
-      </span>
-      <span className={`text-lg font-semibold tracking-tight ${light ? "text-white" : "text-slate-900"}`}>{name}</span>
+    <Link href="/" className="flex shrink-0 items-center" aria-label={`${name} home`}>
+      <BrandLogo name={name} light={light} className="text-[1.15rem] sm:text-xl" />
     </Link>
   );
 }
