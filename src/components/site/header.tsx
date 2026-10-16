@@ -147,7 +147,7 @@ function MenuList({ items }: { items: NavLink[] }) {
 export function Logo({ name, light = false }: { name: string; light?: boolean }) {
   return (
     <Link href="/" className="flex shrink-0 items-center" aria-label={`${name} home`}>
-      <BrandLogo name={name} light={light} className="text-[1.15rem] sm:text-xl" />
+      <BrandLogo light={light} className="text-[1.15rem] sm:text-xl" />
     </Link>
   );
 }

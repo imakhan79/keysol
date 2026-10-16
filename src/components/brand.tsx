@@ -32,8 +32,8 @@ export function BrandMark({ className, light = false }: { className?: string; li
   );
 }
 
-/** Stacked lockup: arc mark centred over the small-caps wordmark, as in the brand logo. */
-export function BrandLogo({ name, light = false, className = "" }: { name: string; light?: boolean; className?: string }) {
+/** Stacked lockup: arc mark centred over the small-caps wordmark, as in the brand logo. The wordmark is fixed artwork, not the CMS company name. */
+export function BrandLogo({ light = false, className = "" }: { light?: boolean; className?: string }) {
   return (
     <span className={`inline-flex flex-col items-center leading-none ${className}`}>
       <BrandMark light={light} className="-mb-0.5 h-[0.95em] w-auto translate-x-[-4%]" />
@@ -42,7 +42,7 @@ export function BrandLogo({ name, light = false, className = "" }: { name: strin
           light ? "text-white" : "text-navy"
         }`}
       >
-        {name}
+        Capitalink Technologies
       </span>
     </span>
   );
