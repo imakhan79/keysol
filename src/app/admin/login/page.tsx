@@ -9,7 +9,7 @@ export default function LoginPage() {
     <main className="grid flex-1 place-items-center bg-ink px-4 py-16">
       <div className="w-full max-w-sm">
         <div className="mb-8 text-center text-white">
-          <BrandLogo light className="text-xl" />
+          <BrandLogo light className="mx-auto h-14" />
           <h1 className="mt-4 text-xl font-semibold">Admin sign in</h1>
           <p className="mt-1 text-sm text-slate-400">Content, leads and analytics</p>
         </div>

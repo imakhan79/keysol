@@ -4,28 +4,27 @@
 @theme inline {
   --font-sans: var(--font-inter);
   --font-display: var(--font-jakarta);
-  --font-wordmark: var(--font-josefin);
 }
 
 @theme {
-  /* Capitalink Technologies palette, sampled from the logo. */
-  --color-ink: #0a1d31;
-  --color-ink-soft: #10283f;
-  /* Logo wordmark navy. */
-  --color-navy: #2a5272;
-  /* Capitalink ocean blue. 500+ meet WCAG AA as text on white; 300–400 are for text/fills on navy. */
-  --color-brand-50: #eef6fb;
-  --color-brand-100: #d6eaf5;
-  --color-brand-200: #aed4ea;
-  --color-brand-300: #78b6d8;
-  --color-brand-400: #3f97c4;
-  --color-brand-500: #2079ad;
-  --color-brand-600: #155f93;
-  --color-brand-700: #114e7b;
-  --color-brand-800: #0f4066;
-  --color-brand-900: #0d3352;
-  /* Logo teal, used for highlights on dark backgrounds. */
-  --color-accent: #46b8b0;
+  /* Capitalink Technologies palette, sampled directly from the brand logo artwork (public/brand). */
+  --color-ink: #081b35;
+  --color-ink-soft: #0f2b52;
+  /* Logo wordmark navy, sampled from the artwork. */
+  --color-navy: #0f2b52;
+  /* Capitalink navy-blue ramp, built around the logo navy. 500+ meet WCAG AA as text on white; 300–400 are for text/fills on navy. */
+  --color-brand-50: #f1f4f8;
+  --color-brand-100: #dde4ee;
+  --color-brand-200: #bac9de;
+  --color-brand-300: #79a3dc;
+  --color-brand-400: #3d79cc;
+  --color-brand-500: #1e56a4;
+  --color-brand-600: #153d74;
+  --color-brand-700: #112f5b;
+  --color-brand-800: #0d2445;
+  --color-brand-900: #09192f;
+  /* Bright accent blue from the same family, used for highlights on dark backgrounds. */
+  --color-accent: #5299e0;
 
   --animate-rise: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   @keyframes rise {

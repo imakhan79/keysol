@@ -9,8 +9,8 @@ export const contentType = "image/png";
 
 // Default social share image for every page that doesn't set its own.
 export default async function OpengraphImage() {
-  const [{ company }, mark] = await Promise.all([getSettings(), readFile(join(process.cwd(), "public/logo-mark.svg"))]);
-  const markSrc = `data:image/svg+xml;base64,${mark.toString("base64")}`;
+  const [{ company }, mark] = await Promise.all([getSettings(), readFile(join(process.cwd(), "public/brand/mark.png"))]);
+  const markSrc = `data:image/png;base64,${mark.toString("base64")}`;
   return new ImageResponse(
     (
       <div
@@ -21,7 +21,7 @@ export default async function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "linear-gradient(135deg, #0a1d31 0%, #105088 70%, #2f8fb0 100%)",
+          background: "linear-gradient(135deg, #081b35 0%, #0f2b52 55%, #153d74 100%)",
           color: "white",
           fontFamily: "sans-serif",
         }}
@@ -29,13 +29,13 @@ export default async function OpengraphImage() {
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <div style={{ display: "flex", padding: "10px 14px", borderRadius: 16, background: "white" }}>
             {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse renders plain <img>, not next/image */}
-            <img src={markSrc} width={78} height={30} alt="" />
+            <img src={markSrc} width={78} height={34} alt="" />
           </div>
           <div style={{ fontSize: 40, fontWeight: 700 }}>{company.name}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.1, maxWidth: 950 }}>{company.tagline}</div>
-          <div style={{ fontSize: 28, color: "#a9e3de" }}>
+          <div style={{ fontSize: 28, color: "#a9c7ea" }}>
             Communication · Software · E-commerce · Marketing · Hosting
           </div>
         </div>
