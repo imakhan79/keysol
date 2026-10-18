@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { ChevronDown, Menu, X } from "lucide-react";
 
@@ -30,55 +31,60 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
       >
         {open ? <X className="size-5" /> : <Menu className="size-5" />}
       </button>
-      {open && (
-        <nav
-          id="mobile-menu"
-          aria-label="Mobile"
-          className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto border-t border-slate-200 bg-white px-4 py-4"
-        >
-          <ul className="divide-y divide-slate-100">
-            <li>
-              <Link href="/" onClick={close} className="block px-2 py-3 text-base font-medium text-slate-800">
-                Home
-              </Link>
-            </li>
-            {groups.map((group) =>
-              group.items ? (
-                <li key={group.label}>
-                  <details className="group">
-                    <summary className="flex cursor-pointer list-none items-center justify-between px-2 py-3 text-base font-medium text-slate-800">
+      {open &&
+        createPortal(
+          // Portalled to <body>: the header's backdrop-blur establishes a containing
+          // block for fixed descendants, which would otherwise clip this panel to the
+          // header's own height instead of the viewport.
+          <nav
+            id="mobile-menu"
+            aria-label="Mobile"
+            className="fixed inset-x-0 top-16 bottom-0 z-40 overflow-y-auto border-t border-slate-200 bg-white px-4 py-4"
+          >
+            <ul className="divide-y divide-slate-100">
+              <li>
+                <Link href="/" onClick={close} className="block px-2 py-3 text-base font-medium text-slate-800">
+                  Home
+                </Link>
+              </li>
+              {groups.map((group) =>
+                group.items ? (
+                  <li key={group.label}>
+                    <details className="group">
+                      <summary className="flex cursor-pointer list-none items-center justify-between px-2 py-3 text-base font-medium text-slate-800">
+                        {group.label}
+                        <ChevronDown className="size-4 text-slate-400 transition group-open:rotate-180" />
+                      </summary>
+                      <ul className="pb-3">
+                        {group.items.map((item) => (
+                          <li key={item.href}>
+                            <Link
+                              href={item.href}
+                              onClick={close}
+                              className="block rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
+                            >
+                              {item.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </li>
+                ) : (
+                  <li key={group.label}>
+                    <Link href={group.href!} onClick={close} className="block px-2 py-3 text-base font-medium text-slate-800">
                       {group.label}
-                      <ChevronDown className="size-4 text-slate-400 transition group-open:rotate-180" />
-                    </summary>
-                    <ul className="pb-3">
-                      {group.items.map((item) => (
-                        <li key={item.href}>
-                          <Link
-                            href={item.href}
-                            onClick={close}
-                            className="block rounded-lg px-4 py-2 text-sm text-slate-600 hover:bg-slate-50"
-                          >
-                            {item.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                </li>
-              ) : (
-                <li key={group.label}>
-                  <Link href={group.href!} onClick={close} className="block px-2 py-3 text-base font-medium text-slate-800">
-                    {group.label}
-                  </Link>
-                </li>
-              ),
-            )}
-          </ul>
-          <Link href="/quote" onClick={close} className="btn-primary mt-6 w-full">
-            Request a quote
-          </Link>
-        </nav>
-      )}
+                    </Link>
+                  </li>
+                ),
+              )}
+            </ul>
+            <Link href="/quote" onClick={close} className="btn-primary mt-6 w-full">
+              Request a quote
+            </Link>
+          </nav>,
+          document.body,
+        )}
     </div>
   );
 }
