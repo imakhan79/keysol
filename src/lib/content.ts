@@ -57,16 +57,28 @@ const defaultSettings: SiteSettings = {
     name: "Capitalink Technologies",
     tagline: "",
     description: "",
-    email: "",
-    phone: "",
-    address: "",
+    email: "sales@capitalinktech.com",
+    phone: "+92 309 9087210",
+    address: "Office # 314, Arooj Arcade, Sector F-10, Markaz, Islamabad",
     hours: "",
+    whatsapp: "+92 309 9087210",
   },
   social: {},
   home: { hero_title: "", hero_subtitle: "", primary_cta: "Request a quote", secondary_cta: "Explore services", stats: [] },
   quote_options: { budgets: [], timelines: [], organization_types: [], company_sizes: [] },
   about: { mission: "", vision: "", values: [], history: [], achievements: [], certifications: [] },
 };
+
+// Seed placeholders ("hello@capitalink.example", "+00 000 000 0000", "Update your address in Admin → Settings")
+// fall back to the real defaults above; anything else saved in Admin → Settings wins.
+function withoutPlaceholders(company: Record<string, unknown>) {
+  const isPlaceholder = (key: string, v: unknown) =>
+    typeof v === "string" &&
+    ((key === "email" && v.endsWith(".example")) ||
+      (key === "phone" && !/[1-9]/.test(v)) ||
+      (key === "address" && /in Admin/i.test(v)));
+  return Object.fromEntries(Object.entries(company).filter(([key, v]) => !isPlaceholder(key, v)));
+}
 
 export async function getSettings(): Promise<SiteSettings> {
   "use cache";
@@ -75,7 +87,8 @@ export async function getSettings(): Promise<SiteSettings> {
   const settings = structuredClone(defaultSettings) as Record<string, unknown>;
   for (const row of rows) {
     const base = settings[row.key];
-    settings[row.key] = base && typeof base === "object" ? { ...base, ...row.value } : row.value;
+    const value = row.key === "company" ? withoutPlaceholders(row.value) : row.value;
+    settings[row.key] = base && typeof base === "object" ? { ...base, ...value } : value;
   }
   return settings as SiteSettings;
 }

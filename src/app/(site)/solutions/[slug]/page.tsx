@@ -76,7 +76,7 @@ async function SolutionDetail({ params }: Pick<PageProps<"/solutions/[slug]">, "
         <Markdown>{solution.body}</Markdown>
         {solution.needs.length > 0 && (
           <aside className="card h-fit p-6 lg:sticky lg:top-24">
-            <h2 className="font-semibold">What {solution.title.toLowerCase()} need from us</h2>
+            <h2 className="font-semibold">What {solution.title} need from us</h2>
             <ul className="mt-4 space-y-2.5 text-sm text-slate-700">
               {solution.needs.map((n) => (
                 <li key={n} className="flex gap-2">
@@ -91,7 +91,7 @@ async function SolutionDetail({ params }: Pick<PageProps<"/solutions/[slug]">, "
       {recommended.length > 0 && (
         <section className="border-y border-slate-100 bg-slate-50/60 py-16">
           <div className="container-page">
-            <SectionHeading eyebrow="Recommended" title={`Services for ${solution.title.toLowerCase()}`} />
+            <SectionHeading eyebrow="Recommended" title={`Services for ${solution.title}`} />
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {recommended.map((s) => (
                 <ServiceCard key={s.id} service={s} />
