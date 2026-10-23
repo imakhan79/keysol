@@ -69,12 +69,13 @@ const defaultSettings: SiteSettings = {
   about: { mission: "", vision: "", values: [], history: [], achievements: [], certifications: [] },
 };
 
-// Seed placeholders ("hello@capitalink.example", "+00 000 000 0000", "Update your address in Admin → Settings")
-// fall back to the real defaults above; anything else saved in Admin → Settings wins.
+// Blank contact fields and seed placeholders ("hello@capitalink.example", "+00 000 000 0000", "Update your address
+// in Admin → Settings") fall back to the real defaults above; anything else saved in Admin → Settings wins.
 function withoutPlaceholders(company: Record<string, unknown>) {
   const isPlaceholder = (key: string, v: unknown) =>
     typeof v === "string" &&
-    ((key === "email" && v.endsWith(".example")) ||
+    ((["email", "phone", "address", "whatsapp"].includes(key) && !v.trim()) ||
+      (key === "email" && v.endsWith(".example")) ||
       (key === "phone" && !/[1-9]/.test(v)) ||
       (key === "address" && /in Admin/i.test(v)));
   return Object.fromEntries(Object.entries(company).filter(([key, v]) => !isPlaceholder(key, v)));
