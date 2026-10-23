@@ -7,24 +7,25 @@
 }
 
 @theme {
-  /* Capitalink Technologies palette, sampled directly from the brand logo artwork (public/brand). */
-  --color-ink: #081b35;
-  --color-ink-soft: #0f2b52;
-  /* Logo wordmark navy, sampled from the artwork. */
-  --color-navy: #0f2b52;
-  /* Capitalink navy-blue ramp, built around the logo navy. 500+ meet WCAG AA as text on white; 300–400 are for text/fills on navy. */
-  --color-brand-50: #f1f4f8;
-  --color-brand-100: #dde4ee;
-  --color-brand-200: #bac9de;
-  --color-brand-300: #79a3dc;
-  --color-brand-400: #3d79cc;
-  --color-brand-500: #1e56a4;
-  --color-brand-600: #153d74;
-  --color-brand-700: #112f5b;
-  --color-brand-800: #0d2445;
-  --color-brand-900: #09192f;
+  /* Capitalink Technologies palette, sampled from the brand logo artwork (public/brand):
+     swoosh royal navy #0a2470, wordmark ink #0a1428. */
+  --color-ink: #070f24;
+  --color-ink-soft: #0c1a40;
+  /* Logo wordmark navy. */
+  --color-navy: #0a1428;
+  /* Royal navy ramp built around the logo swoosh (brand-700). 500+ meet WCAG AA as text on white; 300–400 are for text/fills on navy. */
+  --color-brand-50: #f0f3fb;
+  --color-brand-100: #dfe5f6;
+  --color-brand-200: #bfcbed;
+  --color-brand-300: #8ea3e3;
+  --color-brand-400: #5a78d6;
+  --color-brand-500: #2f4fbf;
+  --color-brand-600: #1d3797;
+  --color-brand-700: #0a2470;
+  --color-brand-800: #0b1d55;
+  --color-brand-900: #08143b;
   /* Bright accent blue from the same family, used for highlights on dark backgrounds. */
-  --color-accent: #5299e0;
+  --color-accent: #7b9cf2;
 
   --animate-rise: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
   @keyframes rise {
@@ -82,7 +83,7 @@ a.card {
 a.card:hover {
   transform: translateY(-3px);
   border-color: var(--color-brand-200);
-  box-shadow: 0 12px 32px -12px rgb(10 29 49 / 0.18);
+  box-shadow: 0 12px 32px -12px rgb(10 36 112 / 0.18);
 }
 
 /* Subtle grid used behind dark hero sections */
@@ -100,7 +101,7 @@ a.card:hover {
   @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-60;
 }
 @utility btn-primary {
-  @apply btn bg-brand-600 text-white shadow-[0_0_0_1px_rgb(32_121_173/0.45),0_8px_24px_-8px_rgb(21_95_147/0.6)] hover:-translate-y-px hover:bg-brand-500 hover:shadow-[0_0_0_1px_rgb(70_184_176/0.5),0_12px_32px_-8px_rgb(32_121_173/0.75)] active:translate-y-0;
+  @apply btn bg-brand-600 text-white shadow-[0_0_0_1px_rgb(47_79_191/0.45),0_8px_24px_-8px_rgb(29_55_151/0.6)] hover:-translate-y-px hover:bg-brand-500 hover:shadow-[0_0_0_1px_rgb(90_120_214/0.5),0_12px_32px_-8px_rgb(47_79_191/0.75)] active:translate-y-0;
 }
 @utility btn-secondary {
   @apply btn border border-slate-300 bg-white text-navy hover:border-brand-500 hover:text-brand-700;

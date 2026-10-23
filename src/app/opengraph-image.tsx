@@ -21,7 +21,7 @@ export default async function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 72,
-          background: "linear-gradient(135deg, #081b35 0%, #0f2b52 55%, #153d74 100%)",
+          background: "linear-gradient(135deg, #070f24 0%, #0b1d55 55%, #0a2470 100%)",
           color: "white",
           fontFamily: "sans-serif",
         }}
@@ -29,13 +29,13 @@ export default async function OpengraphImage() {
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
           <div style={{ display: "flex", padding: "10px 14px", borderRadius: 16, background: "white" }}>
             {/* eslint-disable-next-line @next/next/no-img-element -- ImageResponse renders plain <img>, not next/image */}
-            <img src={markSrc} width={78} height={34} alt="" />
+            <img src={markSrc} width={62} height={40} alt="" />
           </div>
           <div style={{ fontSize: 40, fontWeight: 700 }}>{company.name}</div>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ fontSize: 64, fontWeight: 700, lineHeight: 1.1, maxWidth: 950 }}>{company.tagline}</div>
-          <div style={{ fontSize: 28, color: "#a9c7ea" }}>
+          <div style={{ fontSize: 28, color: "#bfcbed" }}>
             Communication · Software · E-commerce · Marketing · Hosting
           </div>
         </div>
