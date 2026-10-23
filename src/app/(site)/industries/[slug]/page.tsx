@@ -3,8 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { Markdown } from "@/components/markdown";
-import { CaseStudyCard, CtaBanner, DetailSkeleton, PageHero, ProjectCard, SectionHeading } from "@/components/site/ui";
-import { getCaseStudies, getIndustry, getProjects, getSlugs } from "@/lib/content";
+import { CtaBanner, DetailSkeleton, PageHero } from "@/components/site/ui";
+import { getIndustry, getSlugs } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {
@@ -33,11 +33,6 @@ async function IndustryDetail({ params }: Pick<PageProps<"/industries/[slug]">, 
   const industry = await getIndustry((await params).slug);
   if (!industry) notFound();
 
-  const [projects, studies] = await Promise.all([
-    getProjects({ industryId: industry.id }),
-    getCaseStudies({ industryId: industry.id }),
-  ]);
-
   return (
     <>
       <PageHero
@@ -58,21 +53,6 @@ async function IndustryDetail({ params }: Pick<PageProps<"/industries/[slug]">, 
       <div className="container-page max-w-3xl py-16">
         <Markdown>{industry.body}</Markdown>
       </div>
-      {(studies.length > 0 || projects.length > 0) && (
-        <section className="bg-slate-50 py-16">
-          <div className="container-page">
-            <SectionHeading title={`Our work in ${industry.name.toLowerCase()}`} />
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {studies.map((s) => (
-                <CaseStudyCard key={s.id} study={s} />
-              ))}
-              {projects.map((p) => (
-                <ProjectCard key={p.id} project={p} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
       <CtaBanner />
     </>
   );

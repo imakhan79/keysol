@@ -9,25 +9,19 @@ import { Markdown } from "@/components/markdown";
 import { FaqList } from "@/components/site/faq-list";
 import { LeadForm } from "@/components/site/lead-form";
 import {
-  CaseStudyCard,
   CtaBanner,
   DetailSkeleton,
   PageHero,
-  ProjectCard,
   SectionHeading,
   ServiceCard,
-  TestimonialCard,
 } from "@/components/site/ui";
 import {
-  getCaseStudies,
   getFaqs,
-  getProjects,
   getService,
   getServiceCategories,
   getServices,
   getSettings,
   getSlugs,
-  getTestimonials,
 } from "@/lib/content";
 import { siteUrl } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
@@ -58,11 +52,8 @@ async function ServiceDetail({ params }: Pick<PageProps<"/services/[slug]">, "pa
   const service = await getService((await params).slug);
   if (!service) notFound();
 
-  const [allServices, projects, studies, testimonials, faqs, { company }, categories] = await Promise.all([
+  const [allServices, faqs, { company }, categories] = await Promise.all([
     getServices(),
-    getProjects({ serviceId: service.id }),
-    getCaseStudies({ serviceId: service.id }),
-    getTestimonials(),
     getFaqs(),
     getSettings(),
     getServiceCategories(),
@@ -74,7 +65,6 @@ async function ServiceDetail({ params }: Pick<PageProps<"/services/[slug]">, "pa
   const related = allServices
     .filter((s) => s.category === service.category && s.id !== service.id && !familyIds.has(s.parent_id ?? "") && s.id !== parent?.id)
     .slice(0, 3);
-  const quotes = testimonials.filter((t) => t.service_id === service.id).slice(0, 2);
   const serviceFaqs = faqs.filter((f) => f.service_id === service.id);
 
   const crumbs = [
@@ -181,32 +171,6 @@ async function ServiceDetail({ params }: Pick<PageProps<"/services/[slug]">, "pa
           </div>
         </aside>
       </div>
-
-      {(studies.length > 0 || projects.length > 0) && (
-        <section className="bg-slate-50 py-16">
-          <div className="container-page">
-            <SectionHeading title={`${service.title} in action`} />
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {studies.slice(0, 3).map((s) => (
-                <CaseStudyCard key={s.id} study={s} />
-              ))}
-              {projects.slice(0, 3 - Math.min(studies.length, 3)).map((p) => (
-                <ProjectCard key={p.id} project={p} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {quotes.length > 0 && (
-        <section className="container-page py-16">
-          <div className="grid gap-5 md:grid-cols-2">
-            {quotes.map((t) => (
-              <TestimonialCard key={t.id} testimonial={t} />
-            ))}
-          </div>
-        </section>
-      )}
 
       {related.length > 0 && (
         <section className="container-page py-16">

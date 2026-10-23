@@ -6,28 +6,22 @@ import { RevealGrid } from "@/components/motion";
 import { JsonLd } from "@/components/json-ld";
 import { FaqList } from "@/components/site/faq-list";
 import {
-  CaseStudyCard,
   CtaBanner,
   IndustryCard,
   PostCard,
-  ProjectCard,
   SectionHeading,
   ServiceCard,
   SolutionCard,
-  TestimonialCard,
 } from "@/components/site/ui";
 import {
-  getCaseStudies,
   getFaqs,
   getIndustries,
   getPosts,
-  getProjects,
   getBlogCategories,
   getServiceCategories,
   getServices,
   getSettings,
   getSolutions,
-  getTestimonials,
 } from "@/lib/content";
 import { withSeoOverrides } from "@/lib/seo";
 import { siteUrl } from "@/lib/site";
@@ -45,15 +39,12 @@ const steps = [
 ];
 
 export default async function HomePage() {
-  const [settings, services, solutions, industries, projects, caseStudies, testimonials, faqs, posts, categories, blogCategories] =
+  const [settings, services, solutions, industries, faqs, posts, categories, blogCategories] =
     await Promise.all([
       getSettings(),
       getServices(),
       getSolutions(),
       getIndustries(),
-      getProjects(),
-      getCaseStudies(),
-      getTestimonials({ featuredOnly: true }),
       getFaqs(),
       getPosts(),
       getServiceCategories(),
@@ -63,8 +54,6 @@ export default async function HomePage() {
   const topLevel = services.filter((s) => !s.parent_id);
   const featured = topLevel.filter((s) => s.is_featured).slice(0, 6);
   const featuredSolutions = solutions.filter((s) => s.is_featured).slice(0, 4);
-  const featuredProjects = projects.filter((p) => p.is_featured).slice(0, 3);
-  const featuredStudies = caseStudies.filter((c) => c.is_featured).slice(0, 3);
   const homeFaqs = faqs.filter((f) => f.show_on_home).slice(0, 6);
 
   return (
@@ -240,44 +229,6 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Portfolio */}
-      {featuredProjects.length > 0 && (
-        <section className="container-page py-20 sm:py-24">
-          <SectionHeading eyebrow="Portfolio" title="Recent projects" action={{ href: "/portfolio", label: "Full portfolio" }} />
-          <RevealGrid className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {featuredProjects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </RevealGrid>
-        </section>
-      )}
-
-      {/* Case studies */}
-      {featuredStudies.length > 0 && (
-        <section className="bg-slate-50 py-20 sm:py-24">
-          <div className="container-page">
-            <SectionHeading eyebrow="Case studies" title="Results we are proud of" action={{ href: "/case-studies", label: "All case studies" }} />
-            <RevealGrid className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {featuredStudies.map((study) => (
-                <CaseStudyCard key={study.id} study={study} />
-              ))}
-            </RevealGrid>
-          </div>
-        </section>
-      )}
-
-      {/* Testimonials */}
-      {testimonials.length > 0 && (
-        <section className="container-page py-20 sm:py-24">
-          <SectionHeading eyebrow="Testimonials" title="What our clients say" action={{ href: "/testimonials", label: "All testimonials" }} />
-          <RevealGrid className="grid gap-5 md:grid-cols-3">
-            {testimonials.slice(0, 3).map((t) => (
-              <TestimonialCard key={t.id} testimonial={t} />
-            ))}
-          </RevealGrid>
-        </section>
-      )}
 
       {/* FAQ */}
       {homeFaqs.length > 0 && (

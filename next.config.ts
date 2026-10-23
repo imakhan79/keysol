@@ -17,7 +17,15 @@ const nextConfig: NextConfig = {
     remotePatterns: [{ protocol: "https", hostname: "*.supabase.co", pathname: "/storage/v1/object/public/**" }],
   },
   async redirects() {
-    return [{ source: "/services/bulk-sms", destination: "/services/sms-solutions", permanent: true }];
+    return [
+      { source: "/services/bulk-sms", destination: "/services/sms-solutions", permanent: true },
+      // Sections taken off the public site: "Our Work" (portfolio, case studies, testimonials) and Support.
+      ...["/portfolio", "/portfolio/:slug", "/case-studies", "/case-studies/:slug", "/testimonials", "/support"].map((source) => ({
+        source,
+        destination: "/",
+        permanent: false,
+      })),
+    ];
   },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

@@ -24,16 +24,9 @@ export const defaultServiceCategories: ServiceCategoryRow[] = [
 export type NavLink = { href: string; label: string; description?: string };
 
 /** Static dropdowns. Services and Solutions menus are built from the CMS. */
-export const workNav: NavLink[] = [
-  { href: "/portfolio", label: "Portfolio", description: "Projects we've delivered" },
-  { href: "/case-studies", label: "Case Studies", description: "Challenges, solutions and results" },
-  { href: "/testimonials", label: "Testimonials", description: "What clients say" },
-];
-
 export const companyNav: NavLink[] = [
   { href: "/about", label: "About Us", description: "Mission, team and capabilities" },
   { href: "/faqs", label: "FAQs", description: "Answers to common questions" },
-  { href: "/support", label: "Support", description: "Support channels and service levels" },
   { href: "/blog", label: "Blog", description: "Insights and guides" },
 ];
 

@@ -140,7 +140,6 @@ export const contentTypes: Record<string, ContentType> = {
       { name: "client_name", label: "Client" },
       { name: "sort_order", label: "Order" },
     ],
-    publicPath: (r) => `/portfolio/${r.slug}`,
     fields: [
       { name: "title", label: "Title", kind: "text", required: true, half: true },
       slugField,
@@ -171,7 +170,6 @@ export const contentTypes: Record<string, ContentType> = {
       { name: "client_name", label: "Client" },
       { name: "published_at", label: "Date" },
     ],
-    publicPath: (r) => `/case-studies/${r.slug}`,
     fields: [
       { name: "title", label: "Title", kind: "text", required: true, half: true },
       slugField,

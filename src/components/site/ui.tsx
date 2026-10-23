@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { Reveal } from "@/components/motion";
-import { ArrowRight, ChevronRight, Quote, Star } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import { Icon } from "@/components/icon";
 import { CmsImage } from "@/components/cms-image";
 import { JsonLd } from "@/components/json-ld";
 import { formatDate, siteUrl } from "@/lib/site";
-import type { BlogPost, CaseStudy, Industry, PortfolioProject, Service, Solution, Testimonial } from "@/lib/types";
+import type { BlogPost, Industry, Service, Solution } from "@/lib/types";
 
 export function PageHero({
   eyebrow,
@@ -193,88 +193,6 @@ function Cover({ src, alt, label }: { src: string | null; alt: string; label: st
     <div className="grid aspect-[16/10] w-full place-items-center bg-gradient-to-br from-ink to-brand-900 text-sm font-medium text-white/70">
       {label}
     </div>
-  );
-}
-
-export function ProjectCard({ project }: { project: PortfolioProject }) {
-  return (
-    <Link href={`/portfolio/${project.slug}`} className="card group flex flex-col overflow-hidden transition hover:shadow-lg">
-      <Cover src={project.cover_image_url} alt={project.title} label={project.client_name || project.title} />
-      <div className="flex flex-1 flex-col p-6">
-        {project.client_name && <p className="text-xs font-medium text-slate-500">{project.client_name}</p>}
-        <h3 className="mt-1 font-semibold text-slate-900 group-hover:text-brand-700">{project.title}</h3>
-        <p className="mt-2 flex-1 text-sm text-slate-600">{project.summary}</p>
-        {project.technologies.length > 0 && (
-          <ul className="mt-4 flex flex-wrap gap-1.5">
-            {project.technologies.slice(0, 4).map((t) => (
-              <li key={t} className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs text-slate-600">
-                {t}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </Link>
-  );
-}
-
-export function CaseStudyCard({ study }: { study: CaseStudy }) {
-  return (
-    <Link href={`/case-studies/${study.slug}`} className="card group flex flex-col overflow-hidden transition hover:shadow-lg">
-      <Cover src={study.cover_image_url} alt={study.title} label={study.client_name || "Case study"} />
-      <div className="flex flex-1 flex-col p-6">
-        {study.client_name && <p className="text-xs font-medium text-slate-500">{study.client_name}</p>}
-        <h3 className="mt-1 font-semibold text-slate-900 group-hover:text-brand-700">{study.title}</h3>
-        <p className="mt-2 flex-1 text-sm text-slate-600">{study.summary}</p>
-        {study.metrics.length > 0 && (
-          <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
-            {study.metrics.slice(0, 2).map((m) => (
-              <div key={m.label}>
-                <dt className="text-xs text-slate-500">{m.label}</dt>
-                <dd className="text-lg font-semibold text-brand-700">{m.value}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-      </div>
-    </Link>
-  );
-}
-
-export function TestimonialCard({ testimonial, industry }: { testimonial: Testimonial; industry?: string }) {
-  return (
-    <figure className="card flex h-full flex-col p-6">
-      <Quote className="size-6 text-brand-300" aria-hidden="true" />
-      {testimonial.rating && (
-        <div className="mt-3 flex gap-0.5" aria-label={`${testimonial.rating} out of 5 stars`}>
-          {Array.from({ length: 5 }, (_, i) => (
-            <Star
-              key={i}
-              className={`size-4 ${i < testimonial.rating! ? "fill-amber-400 text-amber-400" : "text-slate-200"}`}
-              aria-hidden="true"
-            />
-          ))}
-        </div>
-      )}
-      <blockquote className="mt-3 flex-1 text-slate-700">“{testimonial.quote}”</blockquote>
-      <figcaption className="mt-6 flex items-center gap-3">
-        {testimonial.avatar_url ? (
-          // eslint-disable-next-line @next/next/no-img-element -- CMS images come from arbitrary hosts
-          <img src={testimonial.avatar_url} alt="" className="size-10 rounded-full object-cover" />
-        ) : (
-          <span className="grid size-10 place-items-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">
-            {testimonial.author_name.slice(0, 1)}
-          </span>
-        )}
-        <span>
-          <span className="block text-sm font-semibold text-slate-900">{testimonial.author_name}</span>
-          <span className="block text-xs text-slate-500">
-            {[testimonial.author_role, testimonial.company].filter(Boolean).join(", ")}
-          </span>
-          {industry && <span className="mt-0.5 block text-xs font-medium text-brand-700">{industry}</span>}
-        </span>
-      </figcaption>
-    </figure>
   );
 }
 

@@ -5,16 +5,14 @@ import type { Metadata } from "next";
 import { CheckCircle2 } from "lucide-react";
 import { Markdown } from "@/components/markdown";
 import {
-  CaseStudyCard,
   CtaBanner,
   DetailSkeleton,
   PageHero,
-  ProjectCard,
   SectionHeading,
   ServiceCard,
   SolutionCard,
 } from "@/components/site/ui";
-import { getCaseStudies, getProjects, getServices, getSlugs, getSolution, getSolutions } from "@/lib/content";
+import { getServices, getSlugs, getSolution, getSolutions } from "@/lib/content";
 import { pageMetadata } from "@/lib/seo";
 
 export async function generateStaticParams() {
@@ -43,18 +41,13 @@ async function SolutionDetail({ params }: Pick<PageProps<"/solutions/[slug]">, "
   const solution = await getSolution((await params).slug);
   if (!solution) notFound();
 
-  const [services, projects, studies, solutions] = await Promise.all([
+  const [services, solutions] = await Promise.all([
     getServices(),
-    getProjects(),
-    getCaseStudies(),
     getSolutions(),
   ]);
   const recommended = solution.service_slugs
     .map((slug) => services.find((s) => s.slug === slug))
     .filter((s) => s !== undefined);
-  const serviceIds = new Set(recommended.map((s) => s.id));
-  const relevantStudies = studies.filter((c) => c.service_id && serviceIds.has(c.service_id)).slice(0, 3);
-  const relevantProjects = projects.filter((p) => p.service_id && serviceIds.has(p.service_id)).slice(0, 3 - relevantStudies.length);
   const technologies = [...new Set(recommended.flatMap((s) => s.technologies))];
   const others = solutions.filter((s) => s.id !== solution.id && s.kind === solution.kind).slice(0, 4);
 
@@ -118,22 +111,6 @@ async function SolutionDetail({ params }: Pick<PageProps<"/solutions/[slug]">, "
               </li>
             ))}
           </ul>
-        </section>
-      )}
-
-      {(relevantStudies.length > 0 || relevantProjects.length > 0) && (
-        <section className="bg-slate-50 py-16">
-          <div className="container-page">
-            <SectionHeading title="Relevant work" />
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {relevantStudies.map((s) => (
-                <CaseStudyCard key={s.id} study={s} />
-              ))}
-              {relevantProjects.map((p) => (
-                <ProjectCard key={p.id} project={p} />
-              ))}
-            </div>
-          </div>
         </section>
       )}
 

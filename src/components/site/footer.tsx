@@ -62,12 +62,8 @@ export async function SiteFooter() {
 
         <FooterColumn title="Company">
           <FooterLink href="/about">About Us</FooterLink>
-          <FooterLink href="/portfolio">Portfolio</FooterLink>
-          <FooterLink href="/case-studies">Case Studies</FooterLink>
-          <FooterLink href="/testimonials">Testimonials</FooterLink>
           <FooterLink href="/blog">Blog</FooterLink>
           <FooterLink href="/faqs">FAQs</FooterLink>
-          <FooterLink href="/support">Support</FooterLink>
         </FooterColumn>
 
         <FooterColumn title="Get in touch">

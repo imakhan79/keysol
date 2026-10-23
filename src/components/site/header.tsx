@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { BrandLogo } from "@/components/brand";
 import { Icon } from "@/components/icon";
 import { getServiceCategories, getServices, getSettings, getSolutions } from "@/lib/content";
-import { companyNav, workNav, type NavLink } from "@/lib/site";
+import { companyNav, type NavLink } from "@/lib/site";
 import { MobileNav, type NavGroup } from "./mobile-nav";
 
 export async function SiteHeader() {
@@ -23,7 +23,6 @@ export async function SiteHeader() {
     { label: "Services", items: [{ href: "/services", label: "All services" }, ...topLevel.map((s) => ({ href: `/services/${s.slug}`, label: s.title }))] },
     { label: "Solutions", items: [{ href: "/solutions", label: "All solutions" }, ...solutionLinks] },
     { label: "Industries", href: "/industries" },
-    { label: "Our work", items: workNav },
     { label: "Company", items: companyNav },
     { label: "Contact Us", href: "/contact" },
   ];
@@ -69,9 +68,6 @@ export async function SiteHeader() {
             <MenuList items={[...solutionLinks, { href: "/solutions", label: "All solutions →" }]} />
           </Dropdown>
           <TopLink href="/industries">Industries</TopLink>
-          <Dropdown label="Our Work" href="/portfolio">
-            <MenuList items={workNav} />
-          </Dropdown>
           <Dropdown label="Company" href="/about">
             <MenuList items={companyNav} />
           </Dropdown>

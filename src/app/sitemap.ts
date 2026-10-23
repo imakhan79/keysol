@@ -1,9 +1,7 @@
 import type { MetadataRoute } from "next";
 import {
-  getCaseStudies,
   getIndustries,
   getPosts,
-  getProjects,
   getSeoSettings,
   getServices,
   getSolutions,
@@ -11,11 +9,9 @@ import {
 import { siteUrl } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [services, industries, projects, studies, posts, solutions, seo] = await Promise.all([
+  const [services, industries, posts, solutions, seo] = await Promise.all([
     getServices(),
     getIndustries(),
-    getProjects(),
-    getCaseStudies(),
     getPosts(),
     getSolutions(),
     getSeoSettings(),
@@ -27,13 +23,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/services",
     "/solutions",
     "/industries",
-    "/portfolio",
-    "/case-studies",
-    "/testimonials",
     "/blog",
     "/about",
     "/faqs",
-    "/support",
     "/contact",
     "/quote",
     "/book-consultation",
@@ -60,8 +52,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...entries("/services", services, 0.8),
     ...entries("/solutions", solutions, 0.7),
     ...entries("/industries", industries, 0.7),
-    ...entries("/portfolio", projects, 0.6),
-    ...entries("/case-studies", studies, 0.7),
     ...entries("/blog", posts, 0.6),
   ];
 }
